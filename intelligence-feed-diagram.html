@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlashCard Intelligence Feed — Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #08090a;
+    color: #e8e9eb;
+    padding: 60px 40px;
+    min-height: 100vh;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .page-title h1 {
+    font-size: 36px;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    color: #f7f8f8;
+  }
+  .page-title p {
+    margin-top: 12px;
+    font-size: 15px;
+    color: #8a8f98;
+    font-weight: 400;
+  }
+  .page-title .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #7170ff;
+    background: rgba(113,112,255,0.08);
+    box-shadow: rgba(113,112,255,0.20) 0 0 0 1px;
+  }
+
+  /* === MAIN FLOW === */
+  .flow {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .flow-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .column-header {
+    padding: 16px 20px;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+  }
+  .column-header h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .column-header p {
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0.5;
+  }
+
+  .column-body {
+    flex: 1;
+    border-radius: 0 0 12px 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Column 1: Input */
+  .col-input .column-header {
+    background: rgba(113,112,255,0.06);
+    box-shadow: rgba(113,112,255,0.15) 0 0 0 1px;
+    color: #7170ff;
+  }
+  .col-input .column-header p { color: #7170ff; }
+  .col-input .column-body {
+    background: rgba(113,112,255,0.03);
+    box-shadow: rgba(113,112,255,0.08) 0 0 0 1px;
+  }
+
+  /* Column 2: Process */
+  .col-process .column-header {
+    background: rgba(245,158,11,0.06);
+    box-shadow: rgba(245,158,11,0.15) 0 0 0 1px;
+    color: #f59e0b;
+  }
+  .col-process .column-header p { color: #f59e0b; }
+  .col-process .column-body {
+    background: rgba(245,158,11,0.03);
+    box-shadow: rgba(245,158,11,0.08) 0 0 0 1px;
+  }
+
+  /* Column 3: Output */
+  .col-output .column-header {
+    background: rgba(39,166,68,0.06);
+    box-shadow: rgba(39,166,68,0.15) 0 0 0 1px;
+    color: #27a644;
+  }
+  .col-output .column-header p { color: #27a644; }
+  .col-output .column-body {
+    background: rgba(39,166,68,0.03);
+    box-shadow: rgba(39,166,68,0.08) 0 0 0 1px;
+  }
+
+  /* Cards inside columns */
+  .intel-card {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: rgba(15,16,17,0.8);
+    box-shadow: rgba(255,255,255,0.05) 0 0 0 1px;
+    transition: all 0.2s;
+  }
+  .intel-card:hover {
+    box-shadow: rgba(255,255,255,0.10) 0 0 0 1px;
+    transform: translateY(-1px);
+  }
+  .intel-card .card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .intel-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f7f8f8;
+    margin-bottom: 4px;
+  }
+  .intel-card p {
+    font-size: 11px;
+    color: #8a8f98;
+    line-height: 1.5;
+  }
+
+  /* Specific card colors */
+  .card-promo .card-icon { background: rgba(39,166,68,0.10); box-shadow: rgba(39,166,68,0.15) 0 0 0 1px; }
+  .card-fee .card-icon { background: rgba(245,158,11,0.10); box-shadow: rgba(245,158,11,0.15) 0 0 0 1px; }
+  .card-feature .card-icon { background: rgba(10,114,239,0.10); box-shadow: rgba(10,114,239,0.15) 0 0 0 1px; }
+  .card-slash .card-icon { background: rgba(239,68,68,0.10); box-shadow: rgba(239,68,68,0.15) 0 0 0 1px; }
+  .card-tip .card-icon { background: rgba(113,112,255,0.10); box-shadow: rgba(113,112,255,0.15) 0 0 0 1px; }
+
+  /* Arrow connectors */
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    flex-shrink: 0;
+  }
+  .arrow-col svg {
+    color: #62666d;
+  }
+
+  /* === FEEDBACK LOOP === */
+  .feedback-section {
+    max-width: 1100px;
+    margin: 48px auto 0;
+  }
+  .feedback-loop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    box-shadow: rgba(255,255,255,0.05) 0 0 0 1px;
+  }
+  .loop-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    background: rgba(245,158,11,0.06);
+    box-shadow: rgba(245,158,11,0.15) 0 0 0 1px;
+  }
+  .loop-content { flex: 1; }
+  .loop-content h3 { font-size: 14px; font-weight: 600; color: #f7f8f8; margin-bottom: 4px; }
+  .loop-content p { font-size: 12px; color: #8a8f98; line-height: 1.6; }
+
+  /* === EXAMPLE FEED === */
+  .example-section {
+    max-width: 1100px;
+    margin: 64px auto 0;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #62666d;
+    margin-bottom: 16px;
+  }
+  .example-feed {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: rgba(255,255,255,0.06) 0 0 0 1px, rgba(50,50,93,0.08) 0 2px 4px;
+    background: rgba(15,16,17,0.6);
+  }
+  .feed-header {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: rgba(255,255,255,0.04) 0 1px 0;
+  }
+  .feed-header .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #27a644;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .feed-header span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #d0d6e0;
+  }
+  .feed-item {
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: rgba(255,255,255,0.03) 0 -1px 0 inset;
+    transition: background 0.15s;
+  }
+  .feed-item:hover { background: rgba(255,255,255,0.02); }
+  .feed-item .fi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .feed-item .fi-content { flex: 1; min-width: 0; }
+  .feed-item .fi-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f7f8f8;
+    margin-bottom: 3px;
+  }
+  .feed-item .fi-meta {
+    font-size: 11px;
+    color: #62666d;
+  }
+  .feed-item .fi-desc {
+    font-size: 12px;
+    color: #8a8f98;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .feed-item .fi-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .fi-actions button {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-confirm {
+    background: rgba(39,166,68,0.08);
+    color: #27a644;
+    box-shadow: rgba(39,166,68,0.15) 0 0 0 1px;
+  }
+  .btn-confirm:hover { background: rgba(39,166,68,0.15); }
+  .btn-deny {
+    background: rgba(239,68,68,0.05);
+    color: #ef4444;
+    box-shadow: rgba(239,68,68,0.10) 0 0 0 1px;
+  }
+  .btn-deny:hover { background: rgba(239,68,68,0.10); }
+
+  .fi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .badge-confirmed {
+    background: rgba(39,166,68,0.08);
+    color: #27a644;
+    box-shadow: rgba(39,166,68,0.12) 0 0 0 1px;
+  }
+  .badge-alert {
+    background: rgba(239,68,68,0.08);
+    color: #ef4444;
+    box-shadow: rgba(239,68,68,0.12) 0 0 0 1px;
+  }
+
+  /* === POSITIONING === */
+  .positioning {
+    max-width: 1100px;
+    margin: 64px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .pos-card {
+    padding: 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    box-shadow: rgba(255,255,255,0.05) 0 0 0 1px;
+  }
+  .pos-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f7f8f8;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pos-card .x { color: #ef4444; font-size: 18px; }
+  .pos-card .check { color: #27a644; font-size: 18px; }
+  .pos-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pos-card li {
+    font-size: 13px;
+    color: #8a8f98;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .pos-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #62666d;
+  }
+
+  /* === FREQUENCY === */
+  .freq-section {
+    max-width: 1100px;
+    margin: 64px auto 0;
+  }
+  .freq-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .freq-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+    background: rgba(15,16,17,0.6);
+    box-shadow: rgba(255,255,255,0.05) 0 0 0 1px;
+    text-align: center;
+  }
+  .freq-card .freq-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .freq-card .freq-type {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d0d6e0;
+    margin-bottom: 4px;
+  }
+  .freq-card .freq-rate {
+    font-size: 11px;
+    color: #8a8f98;
+    margin-bottom: 10px;
+  }
+  .freq-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.04);
+    overflow: hidden;
+  }
+  .freq-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  /* Footer */
+  .footer {
+    max-width: 1100px;
+    margin: 80px auto 0;
+    text-align: center;
+    padding: 24px 0;
+    box-shadow: rgba(255,255,255,0.04) 0 -1px 0;
+  }
+  .footer p {
+    font-size: 11px;
+    color: #62666d;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Title -->
+  <div class="page-title">
+    <div class="badge">Product Architecture</div>
+    <h1>SlashCard Intelligence Feed</h1>
+    <p>运营供给内容，用户验证可信度。不是 DownDetector，是卡友路透社。</p>
+  </div>
+
+  <!-- Main 3-column flow -->
+  <div class="flow">
+    <!-- Column 1: User Input -->
+    <div class="flow-column col-input">
+      <div class="column-header">
+        <h2>Content Supply</h2>
+        <p>双通道供给 · 运营 + 用户</p>
+      </div>
+      <div class="column-body">
+        <div style="margin-bottom:6px">
+          <span style="font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#62666d;">OPS / ADMIN — 团队运营填充</span>
+        </div>
+        <div class="intel-card card-promo">
+          <div class="card-icon">🎁</div>
+          <h3>Promo Intel</h3>
+          <p>从 TG 群/X/官方公告搬运活动信息<br>→ 标题 + 截止日期 + 来源链接</p>
+        </div>
+        <div class="intel-card card-fee">
+          <div class="card-icon">📊</div>
+          <h3>Fee Change</h3>
+          <p>监控并记录费率变动<br>→ 旧费率 → 新费率 + 趋势标注</p>
+        </div>
+        <div class="intel-card card-feature">
+          <div class="card-icon">🆕</div>
+          <h3>Feature Update</h3>
+          <p>新链/新资产/新地区<br>→ 变更内容 + 来源</p>
+        </div>
+        <div class="intel-card card-tip">
+          <div class="card-icon">💡</div>
+          <h3>Tip</h3>
+          <p>团队整理的省钱/避坑技巧<br>→ 冷启动期主要由团队 seed</p>
+        </div>
+        <div style="margin:10px 0 6px">
+          <span style="font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#62666d;">USER — 用户直接提交</span>
+        </div>
+        <div class="intel-card card-slash">
+          <div class="card-icon">/</div>
+          <h3>Slash Report</h3>
+          <p>冻卡/延迟/客服失联<br>→ 愤怒驱动，无需额外激励</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arrow-col">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </div>
+
+    <!-- Column 2: Aggregation -->
+    <div class="flow-column col-process">
+      <div class="column-header">
+        <h2>System Aggregation</h2>
+        <p>噪音 → 信号 · 数据点 → 趋势</p>
+      </div>
+      <div class="column-body">
+        <div class="intel-card">
+          <h3>🔗 合并同类</h3>
+          <p>7 条独立冻卡报告 → 1 条聚合摘要<br>"过去 2 小时 7 人报告冻卡"</p>
+        </div>
+        <div class="intel-card">
+          <h3>📈 趋势标注</h3>
+          <p>标注历史上下文<br>"充值费涨至 1.2%，本季度第 3 次"</p>
+        </div>
+        <div class="intel-card">
+          <h3>✅ 可信度计算</h3>
+          <p>基于 confirm/deny 投票<br>"3 人确认 · 0 人否认"</p>
+        </div>
+        <div class="intel-card">
+          <h3>🎯 卡片状态更新</h3>
+          <p>综合所有信号更新状态灯<br>绿 → 黄 → 红 自动切换</p>
+        </div>
+        <div class="intel-card">
+          <h3>📋 归档到卡片页</h3>
+          <p>Intel 按卡归档到详情页<br>Active Promos / 费率历史 / Tips</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arrow-col">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </div>
+
+    <!-- Column 3: Output -->
+    <div class="flow-column col-output">
+      <div class="column-header">
+        <h2>User Sees</h2>
+        <p>加工过的情报 · 可行动的信息</p>
+      </div>
+      <div class="column-body">
+        <div class="intel-card">
+          <h3>📡 Intelligence Feed</h3>
+          <p>首页实时信息流<br>聚合后的信号，按时间排序<br>颜色区分正向/负向事件</p>
+        </div>
+        <div class="intel-card">
+          <h3>📊 Card Detail Page</h3>
+          <p>每张卡的信息中心：<br>Active Promos · 费率变动<br>Slash Timeline · Tips · Reviews</p>
+        </div>
+        <div class="intel-card">
+          <h3>🖼️ Shareable Status Card</h3>
+          <p>可分享的状态卡片图<br>状态变红时自动生成<br>→ 传播到 X / Telegram</p>
+        </div>
+        <div class="intel-card">
+          <h3>🔔 Push Alert</h3>
+          <p>Watch 某张卡<br>费率变动 / 状态变红 / 新 Promo<br>→ Email 或 Telegram 推送</p>
+        </div>
+        <div class="intel-card" style="opacity: 0.5;">
+          <h3>📧 Weekly Digest (V2)</h3>
+          <p>每周摘要邮件<br>"你关注的 3 张卡本周动态"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Loop -->
+  <div class="feedback-section">
+    <div class="feedback-loop">
+      <div class="loop-icon">🔄</div>
+      <div class="loop-content">
+        <h3>Confirm / Deny — 用户唯一的互动成本</h3>
+        <p>运营发布 intel → 用户点击 <strong style="color:#27a644">Confirm</strong> 或 <strong style="color:#ef4444">Deny</strong> → 可信度分数更新 → Feed 排序优化。<br>用户不需要写任何东西 — 一次点击就是贡献。把消费者变成验证者，几乎零成本。<br><strong style="color:#d0d6e0">供给靠运营，验证靠用户。</strong> 后期用户量起来后可以开放用户 intel 提交。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example Feed -->
+  <div class="example-section">
+    <div class="section-label">Feed 示例 — 用户实际看到的样子</div>
+    <div class="example-feed">
+      <div class="feed-header">
+        <div class="dot"></div>
+        <span>Intelligence Feed</span>
+      </div>
+
+      <!-- Aggregated slash -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(239,68,68,0.10); box-shadow:rgba(239,68,68,0.15) 0 0 0 1px; color:#ef4444;">/</div>
+        <div class="fi-content">
+          <div class="fi-title">
+            RedotPay — 过去 2 小时 7 人报告冻卡
+            <span class="fi-badge badge-alert">🔴 Critical</span>
+          </div>
+          <div class="fi-desc">多名用户报告充值后账户被冻结，需要重新提交 KYC。客服响应缓慢。</div>
+          <div class="fi-meta">Aggregated from 7 reports · 最近一条 12 min ago</div>
+        </div>
+      </div>
+
+      <!-- Promo -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(39,166,68,0.10); box-shadow:rgba(39,166,68,0.15) 0 0 0 1px; color:#27a644;">🎁</div>
+        <div class="fi-content">
+          <div class="fi-title">
+            Rain — 周末餐饮 5% Cashback
+            <span class="fi-badge badge-confirmed">✅ 3 confirmed</span>
+          </div>
+          <div class="fi-desc">本周六日在餐饮类商户消费可获 5% USDC 返现，单笔上限 $50。</div>
+          <div class="fi-meta">by rain_user · 3h ago · expires Sun Apr 13</div>
+          <div class="fi-actions">
+            <button class="btn-confirm">✅ Confirm</button>
+            <button class="btn-deny">❌ Deny</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fee change -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(245,158,11,0.10); box-shadow:rgba(245,158,11,0.15) 0 0 0 1px; color:#f59e0b;">📊</div>
+        <div class="fi-content">
+          <div class="fi-title">RedotPay — 充值费 0.8% → 1.2%</div>
+          <div class="fi-desc">USDT (Tron) 充值手续费上调。本季度第 3 次涨价。</div>
+          <div class="fi-meta">by hk_trader · 5h ago · 2 confirmed</div>
+          <div class="fi-actions">
+            <button class="btn-confirm">✅ Confirm</button>
+            <button class="btn-deny">❌ Deny</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(10,114,239,0.10); box-shadow:rgba(10,114,239,0.15) 0 0 0 1px; color:#0a72ef;">🆕</div>
+        <div class="fi-content">
+          <div class="fi-title">MetaMask Card — 正式上线英国地区</div>
+          <div class="fi-desc">英国用户现可申请 MetaMask Card，支持 Linea 和 Base 链充值。</div>
+          <div class="fi-meta">by metamask_uk · 8h ago · 5 confirmed</div>
+        </div>
+      </div>
+
+      <!-- Tip -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(113,112,255,0.10); box-shadow:rgba(113,112,255,0.15) 0 0 0 1px; color:#7170ff;">💡</div>
+        <div class="fi-content">
+          <div class="fi-title">Tip — Rain 充值走 Polygon 省 90% Gas</div>
+          <div class="fi-desc">Ethereum 充值 gas 约 $3-5，切换到 Polygon USDC 充值只要 $0.01。到账速度一样。</div>
+          <div class="fi-meta">by defi_degen · 1d ago · 8 confirmed</div>
+        </div>
+      </div>
+
+      <!-- Green status -->
+      <div class="feed-item">
+        <div class="fi-icon" style="background:rgba(39,166,68,0.06); box-shadow:rgba(39,166,68,0.10) 0 0 0 1px; color:#27a644;">✅</div>
+        <div class="fi-content">
+          <div class="fi-title" style="color:#8a8f98; font-weight:400;">GnosisPay — 连续 30 天无问题报告</div>
+          <div class="fi-meta">Auto-generated · system</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Frequency -->
+  <div class="freq-section">
+    <div class="section-label">预估内容频率 · 15 张卡</div>
+    <div class="freq-grid">
+      <div class="freq-card">
+        <div class="freq-icon">🎁</div>
+        <div class="freq-type">Promo</div>
+        <div class="freq-rate">4-8 条/周</div>
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:75%; background:linear-gradient(90deg,#27a644,#10b981);"></div></div>
+      </div>
+      <div class="freq-card">
+        <div class="freq-icon">📊</div>
+        <div class="freq-type">Fee Change</div>
+        <div class="freq-rate">2-3 条/周</div>
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:50%; background:linear-gradient(90deg,#f59e0b,#f97316);"></div></div>
+      </div>
+      <div class="freq-card">
+        <div class="freq-icon">🆕</div>
+        <div class="freq-type">Feature</div>
+        <div class="freq-rate">1-2 条/周</div>
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:30%; background:linear-gradient(90deg,#0a72ef,#3b9eff);"></div></div>
+      </div>
+      <div class="freq-card">
+        <div class="freq-icon" style="font-size:20px; font-weight:700; color:#ef4444;">/</div>
+        <div class="freq-type">Slash</div>
+        <div class="freq-rate">事件驱动</div>
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:20%; background:linear-gradient(90deg,#ef4444,#e11d48);"></div></div>
+      </div>
+      <div class="freq-card">
+        <div class="freq-icon">💡</div>
+        <div class="freq-type">Tips</div>
+        <div class="freq-rate">1-2 条/周</div>
+        <div class="freq-bar"><div class="freq-bar-fill" style="width:30%; background:linear-gradient(90deg,#7170ff,#5e6ad2);"></div></div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:13px; color:#8a8f98; margin-top:16px;">
+      合计预估：<strong style="color:#f7f8f8;">10-15 条/周</strong> — 足够支撑 "每次打开都有新东西" 的体验
+    </p>
+  </div>
+
+  <!-- Positioning -->
+  <div class="positioning">
+    <div class="pos-card">
+      <h3><span class="x">✕</span> 不是什么</h3>
+      <ul>
+        <li>不是 todey.xyz — 不是只来一次的费率聚合器</li>
+        <li>不是 DownDetector — 不是只在出事时才有用</li>
+        <li>不是小红书 — 不做晒单和社交内容</li>
+        <li>不是论坛 — 不做开放式讨论</li>
+        <li>不追求日活 — 不硬造高频内容</li>
+        <li>不依赖 UGC 供给 — 冷启动期团队就是编辑部</li>
+      </ul>
+    </div>
+    <div class="pos-card">
+      <h3><span class="check">✓</span> 是什么</h3>
+      <ul>
+        <li>卡友路透社 — 加工过的、可信的情报流</li>
+        <li>充值前必看 — 费率 + 活动 + 状态一眼掌握</li>
+        <li>事件落地页 — X 上有人说出事了，来这看全貌</li>
+        <li>结构化数据 — 费率历史、活动档案、技巧库</li>
+        <li>供给靠运营，验证靠用户 — 明确分工</li>
+        <li>目标频率：持卡用户每周 1-2 次</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>SlashCard Intelligence Feed · Product Architecture · April 2026</p>
+  </div>
+
+</body>
+</html>

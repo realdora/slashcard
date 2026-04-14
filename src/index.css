@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+}
+
+/*
+ * Design System: Linear x Vercel x Stripe fusion
+ * - Linear: dark canvas #08090a, translucent white borders, indigo-violet accent
+ * - Vercel: shadow-as-border (box-shadow 0 0 0 1px), extreme negative tracking, gallery whitespace
+ * - Stripe: blue-tinted shadows rgba(50,50,93,0.25), light-weight headlines (300), warm navy text
+ */
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv01", "ss01";
+  background-color: #08090a;
+  color: #e8e9eb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Vercel shadow-as-border: used instead of CSS borders on cards */
+.card-border {
+  box-shadow:
+    rgba(255,255,255,0.06) 0px 0px 0px 1px,
+    rgba(50,50,93,0.08) 0px 2px 4px,
+    rgba(0,0,0,0.12) 0px 4px 12px -4px;
+}
+.card-border:hover {
+  box-shadow:
+    rgba(255,255,255,0.10) 0px 0px 0px 1px,
+    rgba(50,50,93,0.12) 0px 4px 8px,
+    rgba(0,0,0,0.16) 0px 8px 24px -8px;
+}
+
+.card-border-red {
+  box-shadow:
+    rgba(239,68,68,0.25) 0px 0px 0px 1px,
+    rgba(239,68,68,0.08) 0px 2px 4px,
+    rgba(239,68,68,0.06) 0px 8px 24px -4px;
+}
+
+.card-border-yellow {
+  box-shadow:
+    rgba(245,158,11,0.20) 0px 0px 0px 1px,
+    rgba(245,158,11,0.06) 0px 2px 4px,
+    rgba(245,158,11,0.04) 0px 8px 24px -4px;
+}
+
+/* Stripe-style blue-tinted elevation for modals */
+.elevation-high {
+  box-shadow:
+    rgba(50,50,93,0.25) 0px 13px 27px -5px,
+    rgba(0,0,0,0.3) 0px 8px 16px -8px;
+}
+
+/* Custom scrollbar - Linear style */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+/* Smooth line-clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Stripe-weight display type */
+.display-heading {
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: #f7f8f8;
+}
+
+/* ========== Card Grid ========== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card grid item hover with 3D tilt */
+.card-grid-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  perspective: 800px;
+}
+
+.card-grid-item:hover {
+  transform: translateY(-4px);
+}
+
+.card-grid-item:hover .credit-card-visual {
+  transform: perspective(800px) rotateY(-3deg) rotateX(2deg);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.credit-card-visual {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ========== Promo badge animation ========== */
+.promo-badge {
+  position: relative;
+}
+
+.promo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #27a644;
+  display: inline-block;
+  animation: promo-pulse 2s ease-in-out infinite;
+}
+
+@keyframes promo-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* Promo shimmer on card visual */
+.promo-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(39, 166, 68, 0.06) 45%,
+    rgba(39, 166, 68, 0.12) 50%,
+    rgba(39, 166, 68, 0.06) 55%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========== Feed item left border ========== */
+.feed-item-border {
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+/* Feed vote buttons */
+.feed-vote-btn {
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  justify-content: center;
+}
