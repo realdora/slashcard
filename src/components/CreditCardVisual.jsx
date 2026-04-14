@@ -78,8 +78,8 @@ export default function CreditCardVisual({ card, status, size = 'md', hasPromo =
 
   const sizeConfig = {
     sm: { width: '100%', height: 0, padTop: '63%', nameSize: 12, typeSize: 9, pad: 16, chipScale: 0.65, logoScale: 0.6 },
-    md: { width: 320, height: 202, padTop: null, nameSize: 14, typeSize: 10, pad: 20, chipScale: 0.8, logoScale: 0.75 },
-    lg: { width: 400, height: 252, padTop: null, nameSize: 17, typeSize: 11, pad: 26, chipScale: 1, logoScale: 0.9 },
+    md: { width: '100%', maxWidth: 320, height: 202, padTop: null, nameSize: 14, typeSize: 10, pad: 20, chipScale: 0.8, logoScale: 0.75 },
+    lg: { width: '100%', maxWidth: 400, height: 252, padTop: null, nameSize: 17, typeSize: 11, pad: 26, chipScale: 1, logoScale: 0.9 },
   };
   const cfg = sizeConfig[size] || sizeConfig.md;
 
@@ -91,7 +91,7 @@ export default function CreditCardVisual({ card, status, size = 'md', hasPromo =
 
   const containerStyle = size === 'sm'
     ? { width: '100%', paddingTop: cfg.padTop, position: 'relative', borderRadius: 14, overflow: 'hidden', background: `linear-gradient(135deg, ${c1}, ${c2} 45%, ${c3})`, boxShadow: glowShadow }
-    : { width: cfg.width, height: cfg.height, position: 'relative', borderRadius: 14, overflow: 'hidden', background: `linear-gradient(135deg, ${c1}, ${c2} 45%, ${c3})`, boxShadow: glowShadow, flexShrink: 0 };
+    : { width: cfg.width, maxWidth: cfg.maxWidth, aspectRatio: '1.586', position: 'relative', borderRadius: 14, overflow: 'hidden', background: `linear-gradient(135deg, ${c1}, ${c2} 45%, ${c3})`, boxShadow: glowShadow, flexShrink: 0 };
 
   return (
     <div className="credit-card-visual" style={containerStyle}>

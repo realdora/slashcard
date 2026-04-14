@@ -10,7 +10,7 @@ export default function App() {
   return (
     <DataProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-zinc-950">
+        <div className="min-h-screen">
           <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -18,8 +18,8 @@ export default function App() {
             <Route path="/card/:slug/review" element={<ReviewPage />} />
             <Route path="/card/:slug/report" element={<ReportPage />} />
           </Routes>
-          <footer className="border-t border-zinc-800/50 py-8 mt-12 text-center">
-            <p className="text-[11px] text-zinc-600">SlashCard — Independent crypto card reviews. No affiliation with any card issuer.</p>
+          <footer className="py-8 mt-12 text-center px-6" style={{ boxShadow: 'rgba(255,255,255,0.04) 0px -1px 0px' }}>
+            <p className="text-[11px]" style={{ color: '#4a4d54' }}>SlashCard — Independent crypto card reviews. No affiliation with any card issuer.</p>
           </footer>
         </div>
       </BrowserRouter>

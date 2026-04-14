@@ -6,7 +6,7 @@ export default function Header() {
       background: 'rgba(8,9,10,0.85)',
       boxShadow: 'rgba(255,255,255,0.04) 0px 1px 0px',
     }}>
-      <div className="max-w-[1080px] mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 no-underline group">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
             background: 'linear-gradient(135deg, #5e6ad2, #7170ff)',

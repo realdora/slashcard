@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import CardLogo from '../components/CardLogo';
@@ -144,8 +144,6 @@ export default function ReportPage() {
 }
 
 function SubmittedView({ card, slug, issueType, stats }) {
-  const canvasRef = useRef(null);
-
   const statusLabel = stats.recentSlashCount > 15 ? 'MAJOR ISSUES' : stats.recentSlashCount > 5 ? 'ISSUES REPORTED' : 'ISSUE REPORTED';
   const statusColor = stats.recentSlashCount > 15 ? '#ef4444' : stats.recentSlashCount > 5 ? '#f59e0b' : '#ef4444';
   const reportCount = stats.recentSlashCount + 1; // include the one just submitted

@@ -77,7 +77,7 @@ export default function HomePage() {
             <span className="text-[12px]" style={{ color: '#62666d' }}>→</span>
           </Link>
         )}
-        <h1 className="display-heading text-[44px] sm:text-[56px] leading-[1.05]">
+        <h1 className="display-heading text-[32px] sm:text-[44px] md:text-[56px] leading-[1.05]">
           Real reviews for<br />crypto cards
         </h1>
       </div>
@@ -86,9 +86,9 @@ export default function HomePage() {
         {/* Main */}
         <div className="flex-1 min-w-0">
           {/* Category + Sort row */}
-          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div className="flex items-center justify-between mb-5 gap-3">
             {/* Category filter */}
-            <div className="flex gap-[2px] p-[3px] rounded-lg" style={{
+            <div className="flex gap-[2px] p-[3px] rounded-lg overflow-x-auto flex-shrink-0" style={{
               background: 'rgba(255,255,255,0.02)',
               boxShadow: 'rgba(255,255,255,0.06) 0px 0px 0px 1px',
             }}>
@@ -96,7 +96,7 @@ export default function HomePage() {
                 <button
                   key={f.value}
                   onClick={() => setCategory(f.value)}
-                  className="px-3 py-[6px] text-[12px] font-medium rounded-[5px] transition-all cursor-pointer"
+                  className="px-3 py-[6px] text-[12px] font-medium rounded-[5px] transition-all cursor-pointer whitespace-nowrap"
                   style={{
                     background: category === f.value ? 'rgba(255,255,255,0.07)' : 'transparent',
                     color: category === f.value ? '#f7f8f8' : '#62666d',

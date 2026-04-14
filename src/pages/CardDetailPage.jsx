@@ -60,7 +60,7 @@ export default function CardDetailPage() {
       </Link>
 
       {/* Header card with credit card visual */}
-      <div className={`mt-4 rounded-xl p-6 ${cardShadowClass}`} style={{ background: 'rgba(15,16,17,0.6)' }}>
+      <div className={`mt-4 rounded-xl p-4 sm:p-6 ${cardShadowClass}`} style={{ background: 'rgba(15,16,17,0.6)' }}>
         {/* Credit card visual centered */}
         <div className="flex justify-center mb-6">
           <CreditCardVisual
