@@ -82,36 +82,33 @@ export default function HomePage() {
         </h1>
       </div>
 
-      {/* Category filter tabs */}
-      <div className="flex items-center justify-center gap-1 mb-8">
-        <div className="flex gap-[2px] p-[3px] rounded-lg" style={{
-          background: 'rgba(255,255,255,0.02)',
-          boxShadow: 'rgba(255,255,255,0.06) 0px 0px 0px 1px',
-        }}>
-          {categoryFilters.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setCategory(f.value)}
-              className="px-4 py-[7px] text-[12px] font-medium rounded-[6px] transition-all cursor-pointer"
-              style={{
-                background: category === f.value ? 'rgba(255,255,255,0.07)' : 'transparent',
-                color: category === f.value ? '#f7f8f8' : '#62666d',
-                boxShadow: category === f.value ? 'rgba(255,255,255,0.08) 0px 0px 0px 1px' : 'none',
-                border: 'none',
-              }}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Main */}
         <div className="flex-1 min-w-0">
-          {/* Sort + count */}
-          <div className="flex items-center justify-between mb-5">
-            <span className="text-[13px] font-medium" style={{ color: '#62666d' }}>{sortedCards.length} cards</span>
+          {/* Category + Sort row */}
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            {/* Category filter */}
+            <div className="flex gap-[2px] p-[3px] rounded-lg" style={{
+              background: 'rgba(255,255,255,0.02)',
+              boxShadow: 'rgba(255,255,255,0.06) 0px 0px 0px 1px',
+            }}>
+              {categoryFilters.map(f => (
+                <button
+                  key={f.value}
+                  onClick={() => setCategory(f.value)}
+                  className="px-3 py-[6px] text-[12px] font-medium rounded-[5px] transition-all cursor-pointer"
+                  style={{
+                    background: category === f.value ? 'rgba(255,255,255,0.07)' : 'transparent',
+                    color: category === f.value ? '#f7f8f8' : '#62666d',
+                    boxShadow: category === f.value ? 'rgba(255,255,255,0.08) 0px 0px 0px 1px' : 'none',
+                    border: 'none',
+                  }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            {/* Sort */}
             <div className="flex gap-[2px] p-[3px] rounded-lg" style={{
               background: 'rgba(255,255,255,0.03)',
               boxShadow: 'rgba(255,255,255,0.06) 0px 0px 0px 1px',
