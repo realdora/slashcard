@@ -491,6 +491,29 @@
     margin-top: 32px;
   }
 
+  .lang-switch {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgba(15,16,17,0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--border) 0 0 0 1px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    z-index: 100;
+  }
+  .lang-switch a {
+    color: var(--text-3);
+    margin: 0 4px;
+  }
+  .lang-switch a.active {
+    color: var(--text);
+    font-weight: 600;
+  }
+
   /* === Color swatches === */
   .swatches {
     display: grid;
@@ -524,6 +547,12 @@
 </style>
 </head>
 <body>
+
+<div class="lang-switch">
+  <a class="active">EN</a>
+  ·
+  <a href="product-spec-zh.html">中文</a>
+</div>
 
 <div class="doc">
 

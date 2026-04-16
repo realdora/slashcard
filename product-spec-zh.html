@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlashCard — 产品手册 v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #08090a;
+    --surface: #0f1011;
+    --surface-2: #191a1b;
+    --surface-3: #28282c;
+    --text: #f7f8f8;
+    --text-2: #d0d6e0;
+    --text-3: #8a8f98;
+    --text-4: #62666d;
+    --text-5: #4a4d54;
+    --border: rgba(255,255,255,0.06);
+    --border-2: rgba(255,255,255,0.10);
+    --brand: #7170ff;
+    --brand-2: #5e6ad2;
+    --green: #27a644;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #0a72ef;
+    --purple: #7170ff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+    font-feature-settings: "cv01", "ss01";
+    background: var(--bg);
+    color: var(--text-2);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.65;
+    font-size: 14px;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .doc {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 48px;
+  }
+
+  @media (max-width: 768px) {
+    .doc { padding: 32px 20px; }
+  }
+
+  /* === Cover === */
+  .cover {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+  .cover .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: rgba(113,112,255,0.06);
+    box-shadow: rgba(113,112,255,0.2) 0 0 0 1px;
+    width: fit-content;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-size: 72px;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .cover .subtitle {
+    font-size: 20px;
+    color: var(--text-3);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    max-width: 680px;
+    line-height: 1.5;
+  }
+  .cover .meta {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    max-width: 700px;
+  }
+  .cover .meta-item .k {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-5);
+  }
+  .cover .meta-item .v {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .cover h1 { font-size: 44px; }
+    .cover .subtitle { font-size: 16px; }
+    .cover .meta { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  h2.section {
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 80px 0 8px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  h2.section::before {
+    content: attr(data-num);
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--brand);
+    margin-bottom: 12px;
+  }
+  h2.section + .section-desc {
+    font-size: 15px;
+    color: var(--text-3);
+    margin-bottom: 32px;
+    font-weight: 300;
+    max-width: 720px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 40px 0 12px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin: 24px 0 8px;
+  }
+
+  p { margin-bottom: 12px; }
+  p + p { margin-top: 12px; }
+
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--text-3); font-style: normal; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { color: #828fff; }
+
+  .callout {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    background: rgba(113,112,255,0.04);
+    box-shadow: rgba(113,112,255,0.15) 0 0 0 1px;
+  }
+  .callout.green {
+    background: rgba(39,166,68,0.04);
+    box-shadow: rgba(39,166,68,0.15) 0 0 0 1px;
+  }
+  .callout.yellow {
+    background: rgba(245,158,11,0.04);
+    box-shadow: rgba(245,158,11,0.15) 0 0 0 1px;
+  }
+  .callout.red {
+    background: rgba(239,68,68,0.04);
+    box-shadow: rgba(239,68,68,0.15) 0 0 0 1px;
+  }
+  .callout .title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  .callout p { font-size: 13px; margin: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-3);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  table.bordered {
+    background: var(--surface);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+
+  .card {
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 16px 0;
+  }
+  .card h4 { margin-top: 0; }
+
+  .wireframe {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 24px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    overflow-x: auto;
+  }
+  .wireframe .wf-label {
+    font-family: 'Inter', 'PingFang SC', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-5);
+    margin-bottom: 12px;
+  }
+  .wireframe pre {
+    white-space: pre;
+    color: var(--text-3);
+    line-height: 1.4;
+    font-size: 11px;
+  }
+  .wireframe .hl { color: var(--brand); }
+  .wireframe .hl-green { color: var(--green); }
+  .wireframe .hl-red { color: var(--red); }
+  .wireframe .hl-yellow { color: var(--yellow); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge.green { color: var(--green); background: rgba(39,166,68,0.08); box-shadow: rgba(39,166,68,0.15) 0 0 0 1px; }
+  .badge.yellow { color: var(--yellow); background: rgba(245,158,11,0.08); box-shadow: rgba(245,158,11,0.15) 0 0 0 1px; }
+  .badge.red { color: var(--red); background: rgba(239,68,68,0.08); box-shadow: rgba(239,68,68,0.15) 0 0 0 1px; }
+  .badge.blue { color: var(--blue); background: rgba(10,114,239,0.08); box-shadow: rgba(10,114,239,0.15) 0 0 0 1px; }
+  .badge.purple { color: var(--purple); background: rgba(113,112,255,0.08); box-shadow: rgba(113,112,255,0.15) 0 0 0 1px; }
+  .badge.gray { color: var(--text-3); background: rgba(255,255,255,0.04); box-shadow: var(--border) 0 0 0 1px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  .toc {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin-bottom: 64px;
+  }
+  .toc h4 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin: 0 0 16px;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    counter-reset: section;
+    columns: 2;
+    column-gap: 32px;
+  }
+  @media (max-width: 768px) { .toc ol { columns: 1; } }
+  .toc li {
+    counter-increment: section;
+    padding: 6px 0;
+    font-size: 13px;
+    break-inside: avoid;
+  }
+  .toc li::before {
+    content: counter(section, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-5);
+    margin-right: 12px;
+  }
+  .toc a {
+    color: var(--text-2);
+    border-bottom: 1px dashed transparent;
+  }
+  .toc a:hover {
+    color: var(--text);
+    border-bottom-color: var(--border-2);
+  }
+
+  .spec-block {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 16px 0;
+  }
+  .spec-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-row .k {
+    color: var(--text-4);
+    font-weight: 500;
+  }
+  .spec-row .v { color: var(--text-2); }
+  @media (max-width: 640px) {
+    .spec-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .state-item {
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+  .state-item .state-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 8px;
+  }
+  .state-item .state-desc {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--border) 0 0 0 1px;
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+  .flow-arrow {
+    color: var(--text-5);
+    font-size: 14px;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  .footnote {
+    font-size: 12px;
+    color: var(--text-4);
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .swatch {
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+  .swatch-color {
+    width: 100%;
+    height: 48px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .swatch-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .swatch-hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-4);
+    margin-top: 2px;
+  }
+
+  .lang-switch {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgba(15,16,17,0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--border) 0 0 0 1px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    z-index: 100;
+  }
+  .lang-switch a {
+    color: var(--text-3);
+    margin: 0 4px;
+  }
+  .lang-switch a.active {
+    color: var(--text);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="lang-switch">
+  <a href="product-spec.html">EN</a>
+  ·
+  <a class="active">中文</a>
+</div>
+
+<div class="doc">
+
+<!-- === 封面 === -->
+<section class="cover">
+  <div class="label">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);"></span>
+    产品手册 · v1.0 MVP
+  </div>
+  <h1>SlashCard</h1>
+  <div class="subtitle">面向加密货币卡用户的情报平台。真实评价、实时状态、可行动情报 — 一个地方全搞定。</div>
+  <div class="meta">
+    <div class="meta-item"><div class="k">文档</div><div class="v">产品手册 v1.0</div></div>
+    <div class="meta-item"><div class="k">日期</div><div class="v">2026-04-16</div></div>
+    <div class="meta-item"><div class="k">状态</div><div class="v">MVP 已上线</div></div>
+    <div class="meta-item"><div class="k">线上地址</div><div class="v"><a href="https://crypto-card-review.vercel.app">crypto-card-review.vercel.app</a></div></div>
+  </div>
+</section>
+
+<!-- === 目录 === -->
+<div class="toc">
+  <h4>目录</h4>
+  <ol>
+    <li><a href="#s1">总述</a></li>
+    <li><a href="#s2">产品愿景与核心论点</a></li>
+    <li><a href="#s3">用户画像</a></li>
+    <li><a href="#s4">用户任务 (JTBD)</a></li>
+    <li><a href="#s5">信息架构</a></li>
+    <li><a href="#s6">首页设计规范</a></li>
+    <li><a href="#s7">卡片详情页规范</a></li>
+    <li><a href="#s8">评价表单规范</a></li>
+    <li><a href="#s9">Slash 报告 + 分享流程</a></li>
+    <li><a href="#s10">Intelligence Feed 规范</a></li>
+    <li><a href="#s11">内容供给模型</a></li>
+    <li><a href="#s12">状态指示器算法</a></li>
+    <li><a href="#s13">设计系统</a></li>
+    <li><a href="#s14">组件库</a></li>
+    <li><a href="#s15">交互模式</a></li>
+    <li><a href="#s16">响应式行为</a></li>
+    <li><a href="#s17">文案与语气</a></li>
+    <li><a href="#s18">无障碍</a></li>
+    <li><a href="#s19">增长闭环</a></li>
+    <li><a href="#s20">空态与边界情况</a></li>
+    <li><a href="#s21">待讨论问题与 V2 路线图</a></li>
+    <li><a href="#s22">技术栈</a></li>
+  </ol>
+</div>
+
+<!-- === 章节 1：总述 === -->
+<h2 class="section" id="s1" data-num="01 — 概述">总述</h2>
+<p class="section-desc">SlashCard 是什么、为谁服务、为什么存在。一页纸读懂。</p>
+
+<h3>一句话定义</h3>
+<p>SlashCard 是对标 <a href="https://todey.xyz">todey.xyz</a> 等通用加密卡聚合器的深度替代方案。它不是一张静态对比表，而是一个<strong>活的情报平台</strong> —— 汇集真实用户评价、实时问题报告、运营整理的活动/费率情报，以及社区验证层。</p>
+
+<h3>我们解决的问题</h3>
+<p>目前加密卡用户获取决策信息的渠道非常碎片化：</p>
+<ul>
+  <li><strong>Twitter/X</strong> —— 嘈杂、无结构、立场化</li>
+  <li><strong>Telegram 群</strong> —— 消息被冲走、每张卡一个群相互孤立</li>
+  <li><strong>聚合网站（todey.xyz、cryptonomist）</strong> —— 一次性访问、没有社区信号、没有真实用户体验</li>
+  <li><strong>官方卡片网站</strong> —— 营销宣传，没有事故数据</li>
+</ul>
+<p>没有一个<strong>规范的落地页</strong>能回答这个问题：<em>"X 这张卡现在到底怎么样？"</em></p>
+
+<h3>MVP 核心功能</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>🎴 卡片目录</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">预收录 15 张加密卡，带 CSS 渲染的信用卡视觉、评分与元数据。可按类型筛选（CEX / DeFi / Prepaid / Debit）。</p>
+  </div>
+  <div class="card">
+    <h4>⭐️ 用户评价</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">1-5 星评分 + 文本评价 + 可选截图。无需登录，10 字符下限。</p>
+  </div>
+  <div class="card">
+    <h4>/ Slash 报告</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">快速事件报告（冻卡、延迟、KYC 问题）。驱动 Live Status 状态指示器。</p>
+  </div>
+  <div class="card">
+    <h4>📡 Intelligence Feed</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">运营整理的情报：活动、费率变动、功能更新、技巧。配合社区 confirm/deny。</p>
+  </div>
+  <div class="card">
+    <h4>🚦 Live 状态指示器</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">绿/黄/红三级状态，基于 7 天滚动 slash 数量计算。</p>
+  </div>
+  <div class="card">
+    <h4>📤 可分享状态卡片</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">提交后自动生成 PNG 状态卡片。一键分享到 X。</p>
+  </div>
+</div>
+
+<h3>目标用户</h3>
+<p>持有 1-3 张加密卡、积极使用 USDC/USDT 消费的 crypto-native 用户，主要在亚太和欧洲地区。年龄 22-40。活跃于 Crypto Twitter。</p>
+
+<h3>北极星指标</h3>
+<div class="callout">
+  <div class="title">North Star</div>
+  <p>当有人问 <em>"X 这张卡值得办吗？"</em> 或 <em>"X 卡是不是出事了？"</em> —— 别人扔过来的链接是 SlashCard。</p>
+</div>
+
+<!-- === 章节 2：产品愿景 === -->
+<h2 class="section" id="s2" data-num="02 — 战略">产品愿景与核心论点</h2>
+<p class="section-desc">我们相对竞品的定位，以及产品的核心赌注。</p>
+
+<h3>频率论点</h3>
+<p><strong>一次性聚合器</strong> 和 <strong>日活 App</strong> 之间是一个光谱。大多数加密卡用户不需要每日打开，但也不止打开一次。</p>
+<div class="wireframe">
+  <div class="wf-label">回访频率光谱</div>
+<pre>
+  一次性                            每周                            每日
+  │                                     │                               │
+  todey.xyz ─────────────── <span class="hl">SlashCard</span> ────────────── Twitter/X
+  （选卡时开一次）          （事件 + 活动 + 充值前                 （每天刷）
+                             都会回来看）
+</pre>
+</div>
+
+<h3>用户为什么回来</h3>
+<ol>
+  <li><strong>充值之前</strong> —— 查看当前费率、有无活动、系统有无问题。<em>每周反射性检查。</em></li>
+  <li><strong>X 上看到卡圈新闻</strong> —— 点进 SlashCard 看全貌。<em>事件驱动。</em></li>
+  <li><strong>被烧了</strong> —— 提交 slash 报告警告他人。<em>情绪驱动，强传播性。</em></li>
+  <li><strong>朋友问起</strong> —— 丢一个链接代替打字。<em>转移信息负担。</em></li>
+</ol>
+
+<h3>竞品定位对比</h3>
+<table class="bordered">
+  <thead>
+    <tr>
+      <th>维度</th>
+      <th>todey.xyz</th>
+      <th>DownDetector</th>
+      <th style="color:var(--brand);">SlashCard</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>内容类型</td>
+      <td>静态对比表</td>
+      <td>状态报告</td>
+      <td>评价 + 状态 + 情报</td>
+    </tr>
+    <tr>
+      <td>回访触发</td>
+      <td>选购</td>
+      <td>怀疑故障</td>
+      <td>多触发（充值、事件、活动）</td>
+    </tr>
+    <tr>
+      <td>内容供给</td>
+      <td>管理员独家</td>
+      <td>用户独家</td>
+      <td>混合（运营 + 用户）</td>
+    </tr>
+    <tr>
+      <td>社区层</td>
+      <td>无</td>
+      <td>隐式（计数）</td>
+      <td>显式（confirm/deny）</td>
+    </tr>
+    <tr>
+      <td>可分享性</td>
+      <td>低</td>
+      <td>中</td>
+      <td>高（状态卡片图）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>V1 明确不做的事</h3>
+<div class="callout yellow">
+  <div class="title">V1 明确放弃的功能</div>
+  <p>❌ 用户账号 / 登录 &nbsp;·&nbsp; ❌ 钱包验证 &nbsp;·&nbsp; ❌ 实时卡片 API 对接 &nbsp;·&nbsp; ❌ 推荐返佣系统 &nbsp;·&nbsp; ❌ 移动原生 App &nbsp;·&nbsp; ❌ 多语言（仅英文）&nbsp;·&nbsp; ❌ 用户提交情报（V1 仅运营提交）</p>
+</div>
+
+<!-- === 章节 3：用户画像 === -->
+<h2 class="section" id="s3" data-num="03 — 用户">用户画像</h2>
+<p class="section-desc">三个核心画像驱动所有设计决策。</p>
+
+<div class="grid-3">
+  <div class="card">
+    <span class="badge blue">P1</span>
+    <h4 style="margin-top:12px;">选卡人</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>画像：</strong>即将开第一张加密卡。有 ETH/USDC，想线下消费。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>目标：</strong>选对卡，不踩坑。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>痛点：</strong>选项太多，不相信卡方营销，想看真实体验。</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>访问：</strong>研究阶段 2-3 次。之后很少。</p>
+  </div>
+  <div class="card">
+    <span class="badge purple">P2</span>
+    <h4 style="margin-top:12px;">多卡优化者</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>画像：</strong>持 2-3 张加密卡。根据场景切换使用。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>目标：</strong>每笔交易价值最大化。避免手续费，抓住活动。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>痛点：</strong>卡方悄悄改费率。活动埋在 TG 里。</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>访问：</strong>每周充值前。核心回访画像。</p>
+  </div>
+  <div class="card">
+    <span class="badge red">P3</span>
+    <h4 style="margin-top:12px;">被烧用户</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>画像：</strong>刚刚出事。卡被冻、钱卡住、客服失联。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>目标：</strong>发泄、警告他人、看看自己是不是一个人。</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>痛点：</strong>愤怒。想立刻行动。</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>访问：</strong>事故期间一次。高传播性输出。</p>
+  </div>
+</div>
+
+<h3>V1 画像优先级</h3>
+<p>P2（多卡优化者）是<strong>主要留存目标</strong>。P3（被烧用户）是<strong>主要获客驱动</strong>（通过可分享状态卡）。P1（选卡人）是<strong>次要获客目标</strong>（通过 SEO + 自然发现）。</p>
+
+<!-- === 章节 4：JTBD === -->
+<h2 class="section" id="s4" data-num="04 — 用户">用户任务（JTBD）</h2>
+<p class="section-desc">当用户"雇佣" SlashCard 时，他们想完成的任务。</p>
+
+<table class="bordered">
+  <thead>
+    <tr>
+      <th style="width:60%;">任务描述</th>
+      <th>画像</th>
+      <th>主要功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>当我在选加密卡的时候，我想看到真实用户的体验 —— 这样我就不会在烂卡上浪费钱。</td>
+      <td><span class="badge blue">P1</span></td>
+      <td>评价 + 评分</td>
+    </tr>
+    <tr>
+      <td>当我准备充值的时候，我想查我的卡是否正常、有没有活动 —— 这样我就能价值最大化。</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>状态指示器 + Intel Feed</td>
+    </tr>
+    <tr>
+      <td>当我在 X 上看到有人说卡出事，我想确认是不是普遍问题 —— 这样我知道该不该担心。</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>Slash 时间轴 + Live Feed</td>
+    </tr>
+    <tr>
+      <td>当我的卡刚被冻了，我想告诉全世界 —— 这样别人不会踩坑，我也不再孤单。</td>
+      <td><span class="badge red">P3</span></td>
+      <td>Slash 报告 + 分享到 X</td>
+    </tr>
+    <tr>
+      <td>当朋友问我推荐哪张卡，我想甩一个链接过去 —— 这样我就不用每次都重复解释。</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>卡片详情 URL（SEO）</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- === 章节 5：信息架构 === -->
+<h2 class="section" id="s5" data-num="05 — 架构">信息架构</h2>
+<p class="section-desc">站点地图、URL 结构、导航模型。</p>
+
+<h3>路由</h3>
+<div class="wireframe">
+  <div class="wf-label">URL 结构</div>
+<pre>
+  /                          首页 —— 卡片目录 + 情报流
+  /card/:slug                卡片详情 —— 资料 + 情报 + 评价
+  /card/:slug/review         评价表单
+  /card/:slug/report         Slash 报告表单
+  /card/:slug/report         （提交后）分享成功页
+</pre>
+</div>
+
+<h3>导航模型</h3>
+<p>SlashCard 采用<strong>浅层 Hub-and-Spoke 模型</strong>。首页是 Hub，每个卡片详情是 Spoke。用户在任务之间回到 Hub。</p>
+
+<div class="wireframe">
+<pre>
+                           <span class="hl">┌─────────────┐</span>
+                           <span class="hl">│    首页     │</span>    ← Hub: 卡片目录 + Feed
+                           <span class="hl">└──────┬──────┘</span>
+                                  │
+              ┌───────────────────┼───────────────────┐
+              ▼                   ▼                   ▼
+      ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+      │   卡片详情   │    │   卡片详情   │    │   卡片详情   │
+      │    (Rain)    │    │  (RedotPay)  │    │    (...)     │
+      └───┬──────────┘    └──────────────┘    └──────────────┘
+          │
+          ├──► 写评价
+          │
+          └──► Slash 报告 ──► 分享成功页（带 X 按钮）
+</pre>
+</div>
+
+<h3>持续元素</h3>
+<ul>
+  <li><strong>Header：</strong>置顶、毛玻璃。Logo（→ 首页）、"Crypto Card Reviews" 标签、"Live" 脉冲指示器。</li>
+  <li><strong>Footer：</strong>静态、每页底部。独立性声明（与任何卡方无关联）。</li>
+</ul>
+
+<!-- === 章节 6：首页 === -->
+<h2 class="section" id="s6" data-num="06 — 页面">首页设计规范</h2>
+<p class="section-desc">Hub。第一印象。最重要的页面。</p>
+
+<h3>桌面端布局（≥1024px）</h3>
+<div class="wireframe">
+<pre>
+┌─────────────────────────────────────────────────────────────────┐
+│  [/] SlashCard        CRYPTO CARD REVIEWS           ● Live      │  ← Header
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│            <span class="hl-red">● RedotPay — 10 reports this week →</span>            │  ← 警示条（条件显示）
+│                                                                 │
+│                      Real reviews for                           │
+│                      crypto cards                               │  ← Hero 标题
+│                                                                 │
+│   ┌────────────────────────────────────────────┐  ┌──────────┐ │
+│   │ [All] CEX  DeFi  Prepaid  Debit    [Trend] │  │  Intel   │ │
+│   ├────────────────────────────────────────────┤  │  Feed    │ │
+│   │                                            │  │          │ │
+│   │  ┌──────┐  ┌──────┐  ┌──────┐              │  │ / RedotP │ │
+│   │  │ CARD │  │ CARD │  │ CARD │              │  │   冻卡   │ │
+│   │  │ img  │  │ img  │  │ img  │              │  │          │ │
+│   │  ├──────┤  ├──────┤  ├──────┤              │  │ 🎁 Rain  │ │
+│   │  │ Rain │  │RedotP│  │ Bybit│              │  │  5% 活动 │ │
+│   │  │ ★ 4.5│  │ ★ 2.5│  │ ★ 4.0│              │  │          │ │
+│   │  └──────┘  └──────┘  └──────┘              │  │ ...      │ │
+│   │                                            │  │          │ │
+│   │  ┌──────┐  ┌──────┐  ┌──────┐              │  │          │ │
+│   │  │ CARD │  │ CARD │  │ CARD │              │  │          │ │
+│   │  │ ...  │  │ ...  │  │ ...  │              │  │          │ │
+│   │  └──────┘  └──────┘  └──────┘              │  │          │ │
+│   └────────────────────────────────────────────┘  └──────────┘ │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│           SlashCard — Independent crypto card reviews           │  ← Footer
+└─────────────────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<h3>元素</h3>
+
+<h4>1. 警示横幅（条件显示）</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">目的</div><div class="v">进入页面时第一时间暴露最严重的状态问题。引导注意力到 Slash 报告。</div></div>
+  <div class="spec-row"><div class="k">可见性</div><div class="v">至少有一张卡状态为 <code>yellow</code> 或 <code>red</code> 时才显示。</div></div>
+  <div class="spec-row"><div class="k">选择规则</div><div class="v">按当前排序，第一张 yellow/red 状态的卡。</div></div>
+  <div class="spec-row"><div class="k">交互</div><div class="v">点击 → 跳转到该卡详情页。</div></div>
+  <div class="spec-row"><div class="k">文案模板</div><div class="v"><code>{CARD_NAME} — {COUNT} reports this week</code></div></div>
+  <div class="spec-row"><div class="k">微交互</div><div class="v">脉冲红/黄点（2s ease-in-out）。Hover：scale 1.02。</div></div>
+</div>
+
+<h4>2. Hero 标题</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">文案</div><div class="v">"Real reviews for crypto cards"（"for" 和 "crypto" 之间换行）</div></div>
+  <div class="spec-row"><div class="k">字体样式</div><div class="v">Inter 300 字重，-0.04em 字距。32/44/56px 响应式。</div></div>
+  <div class="spec-row"><div class="k">决策</div><div class="v">删除了 "No shills. No sponsors." 副标题 —— 太说教。评价本身替产品说话。</div></div>
+</div>
+
+<h4>3. 分类筛选 + 排序行</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">分类</div><div class="v">All · CEX Cards · DeFi Native · Prepaid · Debit</div></div>
+  <div class="spec-row"><div class="k">排序选项</div><div class="v">Trending（默认） · Top Rated · Most Reviewed</div></div>
+  <div class="spec-row"><div class="k">默认状态</div><div class="v">分类：All · 排序：Trending</div></div>
+  <div class="spec-row"><div class="k">Trending 逻辑</div><div class="v">按 <code>recentSlashCount DESC</code> 排序，<code>reviewCount DESC</code> 次级。有问题的卡浮到顶部。</div></div>
+  <div class="spec-row"><div class="k">移动端</div><div class="v">横向滚动的 pill 组。<code>whitespace-nowrap + overflow-x-auto</code>。</div></div>
+  <div class="spec-row"><div class="k">设计理由</div><div class="v">分类和排序故意左右分开 —— 它们服务不同的认知模式：分类筛选 vs. 优先级排序。</div></div>
+</div>
+
+<h4>4. 卡片网格</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">布局</div><div class="v">3 列（≥1024px）· 2 列（640-1024px）· 1 列（&lt;640px）</div></div>
+  <div class="spec-row"><div class="k">结构</div><div class="v">信用卡视觉（顶部、全宽、1.586 比例）+ 信息区（底部）</div></div>
+  <div class="spec-row"><div class="k">信息区</div><div class="v">Row 1：<code>卡名 + 中文别名 + 状态 badge</code><br>Row 2：<code>★ 评分 + 4.5 + (12 reviews) + [Promo badge →]</code><br>Row 3：<code>pills：网络 | 类型 | 链 1 | 链 2</code></div></div>
+  <div class="spec-row"><div class="k">Hover 状态</div><div class="v">卡片上浮 4px。信用卡视觉 3D 倾斜（rotateY -3deg, rotateX 2deg, perspective 800px）。</div></div>
+  <div class="spec-row"><div class="k">状态边框</div><div class="v">红色卡片有红色阴影光晕。黄色卡片有黄色光晕。（<strong>首页当前关闭此效果</strong>，避免视觉噪音；仅在详情页启用。）</div></div>
+  <div class="spec-row"><div class="k">活动微光</div><div class="v">有活动的卡片，信用卡视觉上有动画绿色微光覆盖层。</div></div>
+</div>
+
+<h4>5. Intelligence Feed 侧栏</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">位置</div><div class="v">Sticky，右侧，300px 宽。移动端堆叠在网格下方。</div></div>
+  <div class="spec-row"><div class="k">内置筛选</div><div class="v">All · Intel · Reports</div></div>
+  <div class="spec-row"><div class="k">内容类型</div><div class="v">详见 <a href="#s10">§10 Intelligence Feed 规范</a></div></div>
+  <div class="spec-row"><div class="k">最大条数</div><div class="v">最近 30 条，可滚动。桌面端最大高度 580px。</div></div>
+</div>
+
+<h3>首页状态</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name">默认</div>
+    <div class="state-desc">15 张卡，Trending 排序。RedotPay 置顶（红色状态）。警示条显示。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">筛选后（空）</div>
+    <div class="state-desc">筛选+排序结果为 0：显示空状态"No cards match these filters"+ 重置按钮。<em>[V1.1 TODO]</em></div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">全部正常</div>
+    <div class="state-desc">没有卡处于 yellow/red 状态。警示条隐藏。平静状态。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">加载中</div>
+    <div class="state-desc">MVP 用 mock 数据，瞬时加载。接入 Supabase 后：网格加 skeleton shimmer，200ms 淡入。</div>
+  </div>
+</div>
+
+<!-- === 章节 7：卡片详情 === -->
+<h2 class="section" id="s7" data-num="06 — 页面">卡片详情页规范</h2>
+<p class="section-desc">深度挖掘页。用于研究、诊断、提交报告。</p>
+
+<h3>桌面端布局</h3>
+<div class="wireframe">
+<pre>
+  ← All Cards
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                                                             │
+  │              ┌─────────────────────────┐                    │
+  │              │                         │                    │
+  │              │    [ 信用卡视觉         │                    │  ← 头部卡片
+  │              │      CSS 渲染         ] │                    │
+  │              │                         │                    │
+  │              └─────────────────────────┘                    │
+  │                                                             │
+  │              RedotPay  (● Critical 16)  🎁 2 promos         │
+  │              一句话描述...                                  │
+  │              ★★★☆☆  2.5  (3 reviews)                        │
+  │              [Visa] [prepaid] [Ethereum] [Polygon] ...      │
+  │              [USDC] [USDT]                                  │
+  │              Global excl. US · redotpay.com                 │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+
+  [  Write Review (主)  ] [  / Slash Report  ] [📤]                ← 操作行
+
+  ┌─ Active Promos ─────────────────────────────────────────────┐
+  │                                                             │
+  │ 🎁 Weekend 5% cashback on dining                            │
+  │    活动详情... · Expires Apr 14                             │
+  │    [✓ Confirm · 3]  [✗ Deny · 0]    SlashCard Team · 3h     │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─ Fee Changes ───────────────────────────────────────────────┐
+  │ 📊 Top-up fee increased: 0.8% → 1.2%                        │
+  │    ...                                                      │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─ Reports — Last 24h ────────────────────────────────────────┐
+  │ ██░ ░ ░██░ ██ ░░ █░  ░░░░░░░░░░░░░░░░ ░░                    │  ← 24h 柱状图
+  │ 24h ago                                           Now       │
+  └─────────────────────────────────────────────────────────────┘
+
+  Recent Reports
+  ─ 🧊 Frozen Funds · 12m ago — "又冻了，第三次"
+  ─ 🧊 Frozen Funds · 2h ago — ...
+
+  Tips · Feature Updates · Reviews（依次堆叠）
+</pre>
+</div>
+
+<h3>元素</h3>
+
+<h4>1. 头部卡片</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">信用卡视觉</div><div class="v">尺寸：<code>lg</code>（最大 400px 宽）。居中。无论是否有 logo_url 都显示。</div></div>
+  <div class="spec-row"><div class="k">光晕</div><div class="v">红色状态卡片加红色光晕（0 0 40px rgba(239,68,68,0.2)）。黄色加黄色。绿色加中性淡阴影。</div></div>
+  <div class="spec-row"><div class="k">标题行</div><div class="v">卡名（22px 中字重）· 中文别名 · 状态 badge · 活动数量 badge（如果 &gt; 0）</div></div>
+  <div class="spec-row"><div class="k">描述</div><div class="v">最大 500px 宽，13px 静默文字，1-2 句话。</div></div>
+  <div class="spec-row"><div class="k">评分</div><div class="v">星星（md 尺寸 15px）· 评分数字（tabular-nums）· "N reviews"</div></div>
+  <div class="spec-row"><div class="k">元数据 pills</div><div class="v">两行 —— Row 1：网络/类型/链；Row 2：支持资产（靛青色 pills）</div></div>
+  <div class="spec-row"><div class="k">底部行</div><div class="v">服务地区 · <a>可点击的官网 URL</a></div></div>
+</div>
+
+<h4>2. 操作行</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">按钮</div><div class="v">
+    <strong>Write a Review</strong> —— 主操作，靛青渐变，flex-1<br>
+    <strong>/ Slash Report</strong> —— 红色描边，flex-1<br>
+    <strong>📤 Share Status</strong> —— 纯图标，40px 宽，中性
+  </div></div>
+  <div class="spec-row"><div class="k">层级理由</div><div class="v">评价是主操作 —— 这是最高价值 UGC。Report 是次主操作（红描边而非填充）。Share 是三级。</div></div>
+  <div class="spec-row"><div class="k">移动端</div><div class="v">三个按钮保持横排。文字压缩为 <code>Review · Report · 📤</code></div></div>
+</div>
+
+<h4>3. 情报分区</h4>
+<p>只有该卡有对应类型情报时才显示该区块。出现顺序：</p>
+<ol>
+  <li><strong>Active Promos</strong> —— 未过期的活动情报。价值最高，放第一。</li>
+  <li><strong>Fee Changes</strong> —— 时间顺序。标注趋势。</li>
+  <li><strong>Reports — Last 24h</strong> —— 柱状图 + 近期报告列表。</li>
+  <li><strong>Tips</strong> —— 社区知识。</li>
+  <li><strong>Feature Updates</strong> —— 新闻。</li>
+  <li><strong>Reviews</strong> —— 总是最后，最可消费的内容。</li>
+</ol>
+
+<h4>4. 情报卡组件</h4>
+<p>每条情报卡显示：</p>
+<ul>
+  <li>标题（13px 中字重，主文字色）</li>
+  <li>正文（12px，静默，1.6 行高）</li>
+  <li>过期日期（如果是活动）</li>
+  <li>"Source →" 链接（如果有 source_url）</li>
+  <li>分割线，然后操作行：<code>[✓ Confirm · N]  [✗ Deny · N]  posted_by · 时间</code></li>
+</ul>
+
+<h4>5. Slash 时间轴（24h 柱状图）</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">X 轴</div><div class="v">24 根柱，每根代表 1 小时。最旧在左，最新在右。</div></div>
+  <div class="spec-row"><div class="k">Y 轴</div><div class="v">按最大柱比例。count &gt; 0 的柱最小高度 10%。</div></div>
+  <div class="spec-row"><div class="k">颜色</div><div class="v">&gt; 2 条/小时 = 红 · 1-2 = 橙 · 0 = 中性灰（2px 高）</div></div>
+  <div class="spec-row"><div class="k">Tooltip</div><div class="v">Hover 时：在柱上方显示深色 pill 显示 "N"。</div></div>
+  <div class="spec-row"><div class="k">标签</div><div class="v">左侧 "24h ago"，右侧 "Now"。头部显示总数。</div></div>
+</div>
+
+<h4>6. 评价区</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">空状态</div><div class="v">Card-border 盒子，居中："No reviews yet" + CTA "Be the first to review →"</div></div>
+  <div class="spec-row"><div class="k">评价卡</div><div class="v">头像（渐变圆圈，首字母）· display_name · "verified screenshot" badge（如附图） · 时间（右）<br>星星 · 内容（13px body，1.65 行高）</div></div>
+  <div class="spec-row"><div class="k">截图 badge</div><div class="v">绿色 micro-pill："screenshot attached" —— 不点开就能看出这是有凭据的评价。</div></div>
+  <div class="spec-row"><div class="k">排序</div><div class="v">时间顺序，最新在前。</div></div>
+</div>
+
+<!-- === 章节 8：评价表单 === -->
+<h2 class="section" id="s8" data-num="06 — 页面">评价表单规范</h2>
+<p class="section-desc">低门槛评价提交。从原 6 维度 spec 简化而来。</p>
+
+<h3>表单字段</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>字段</th><th>必填</th><th>验证</th><th>UI</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Overall Rating</td>
+      <td>是</td>
+      <td>1-5 星</td>
+      <td>5 个大（28px）星星按钮，hover-scale，选中带光晕</td>
+    </tr>
+    <tr>
+      <td>Your Review</td>
+      <td>是</td>
+      <td>至少 10 字符</td>
+      <td>Textarea，4 行。下方实时字符计数。</td>
+    </tr>
+    <tr>
+      <td>Screenshot</td>
+      <td>否</td>
+      <td>仅图片</td>
+      <td>虚线框上传区。选中后显示文件名。</td>
+    </tr>
+    <tr>
+      <td>Display Name</td>
+      <td>是</td>
+      <td>非空字符串</td>
+      <td>单行输入，placeholder "Your name or handle"</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>简化决策</h3>
+<div class="callout">
+  <div class="title">为什么砍掉了 6 维度评分</div>
+  <p>原 spec 有 6 个独立的 1-5 评分（充值速度、费率、链支持、冻卡风险、客服、KYC）。对零评价的冷启动产品来说，让用户填 6 个滑块是转化杀手。MVP 只用 1 个总评分。多维度评分在 V2 有数据量时再回归。</p>
+</div>
+
+<h3>验证与错误处理</h3>
+<ul>
+  <li>错误显示在提交按钮上方的红色 callout 里</li>
+  <li>一次一个错误（first-failure 获胜），不罗列</li>
+  <li>错误文案直接：用 "Please select a rating" 而不是 "A valid rating is required"</li>
+  <li>无字段内联错误提示（短表单不需要）</li>
+</ul>
+
+<h3>成功状态</h3>
+<p>提交后：整页成功视图 → 1.5s 后自动跳转到卡片详情。</p>
+<div class="wireframe">
+<pre>
+              ┌─────┐
+              │  ✓  │  ← 绿色勾选圆角盒
+              └─────┘
+         Review submitted
+     Redirecting to Rain...
+</pre>
+</div>
+
+<!-- === 章节 9：Slash 报告 === -->
+<h2 class="section" id="s9" data-num="06 — 页面">Slash 报告 + 分享流程</h2>
+<p class="section-desc">病毒增长引擎。报告门槛必须接近零。</p>
+
+<h3>表单字段</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>字段</th><th>必填</th><th>UI</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Issue Type</td>
+      <td>是</td>
+      <td>2×3 点选网格。图标 + 标签 + 描述。</td>
+    </tr>
+    <tr>
+      <td>Details</td>
+      <td>否</td>
+      <td>Textarea，3 行。刻意设计为可选。</td>
+    </tr>
+    <tr>
+      <td>Display Name</td>
+      <td>否（默认 Anonymous）</td>
+      <td>输入框。空 → "Anonymous"。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>问题类型</h3>
+<div class="grid-3">
+  <div class="card"><strong>🧊 Frozen Funds</strong><br><span style="font-size:12px;color:var(--text-4);">卡或账户被冻结</span></div>
+  <div class="card"><strong>⏳ Withdrawal Delayed</strong><br><span style="font-size:12px;color:var(--text-4);">提现卡住</span></div>
+  <div class="card"><strong>💸 Fee Change</strong><br><span style="font-size:12px;color:var(--text-4);">费率意外上涨</span></div>
+  <div class="card"><strong>🚫 KYC Rejected</strong><br><span style="font-size:12px;color:var(--text-4);">KYC 失败或被重新要求</span></div>
+  <div class="card"><strong>📵 Support Down</strong><br><span style="font-size:12px;color:var(--text-4);">客服无响应</span></div>
+  <div class="card"><strong>⚠️ Other</strong><br><span style="font-size:12px;color:var(--text-4);">其他</span></div>
+</div>
+
+<h3>成功状态 —— 分享流程（关键）</h3>
+<p>跟评价表单不同，Slash 报告<strong>不自动跳转</strong>。提交后进入<strong>专门的分享页</strong>，设计目标是最大化病毒传播。</p>
+
+<div class="wireframe">
+  <div class="wf-label">提交后视图布局</div>
+<pre>
+  ┌─────────────────────────────────────────────────────┐
+  │                       ┌───┐                         │
+  │                       │ / │  （红色图标盒）         │
+  │                       └───┘                         │
+  │                Report submitted                     │
+  │      Help spread the word so others are warned      │
+  ├─────────────────────────────────────────────────────┤
+  │  ┌──────────────────────────────────────────────┐   │
+  │  │ <span class="hl-red">▌</span>  （红色重点条）                          │   │
+  │  │  🚨                                          │   │
+  │  │  RedotPay                                    │   │
+  │  │  <span class="hl-red">MAJOR ISSUES</span>                                │   │
+  │  │  ─────────────────────────                   │   │
+  │  │  Frozen Funds reported                       │   │
+  │  │  11 reports this week                        │   │
+  │  │  2.5 ★ from 3 reviews                        │   │
+  │  │  SlashCard — crypto-card-review.vercel.app   │   │
+  │  └──────────────────────────────────────────────┘   │
+  ├─────────────────────────────────────────────────────┤
+  │  [  ✕ Share to X                            ]       │  ← 主 CTA
+  │  [  📋 Copy Status Card Image               ]       │
+  │  [  Back to RedotPay                        ]       │
+  └─────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<h3>分享到 X 流程</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">触发</div><div class="v">点击 "Share to X" 按钮</div></div>
+  <div class="spec-row"><div class="k">行为</div><div class="v">弹出窗口（550×420）打开 <code>https://x.com/intent/tweet</code></div></div>
+  <div class="spec-row"><div class="k">预填文本</div><div class="v"><code>🚨 {CARD}: {ISSUE} reported</code><br><code>{N} reports this week on SlashCard</code><br><code>Check status & report issues →</code></div></div>
+  <div class="spec-row"><div class="k">预填 URL</div><div class="v"><code>https://crypto-card-review.vercel.app/card/{slug}</code></div></div>
+  <div class="spec-row"><div class="k">不带图片</div><div class="v">X intent API 不支持图片附件。用户可单独点 "Copy Image" 粘贴。</div></div>
+</div>
+
+<h3>复制状态卡流程</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">触发</div><div class="v">点击 "Copy Status Card Image"</div></div>
+  <div class="spec-row"><div class="k">处理</div><div class="v">通过 canvas 渲染 PNG（600×340）。<code>navigator.clipboard.write()</code> + <code>ClipboardItem</code>。</div></div>
+  <div class="spec-row"><div class="k">降级</div><div class="v">clipboard API 失败（老 Safari）：自动下载为 <code>slashcard-{slug}.png</code>。</div></div>
+  <div class="spec-row"><div class="k">反馈</div><div class="v">原生 alert："Status card copied to clipboard!"<em> [V1.1 TODO：换成 toast]</em></div></div>
+</div>
+
+<h3>状态卡图片设计</h3>
+<p>生成的 PNG，600×340，圆角。布局：</p>
+<ul>
+  <li>深色背景 <code>#08090a</code></li>
+  <li>顶部 3px 红/黄/绿重点条</li>
+  <li>左上角微妙的径向光晕（状态色）</li>
+  <li>🚨 emoji（36px）</li>
+  <li>卡名（28px 粗体）</li>
+  <li>状态标签（14px 彩色，大写）</li>
+  <li>水平分割线</li>
+  <li>问题类型行</li>
+  <li>报告数行</li>
+  <li>评分行（如有）</li>
+  <li>品牌："SlashCard — crypto-card-review.vercel.app"</li>
+</ul>
+
+<!-- === 章节 10：Intel Feed === -->
+<h2 class="section" id="s10" data-num="07 — 功能">Intelligence Feed 规范</h2>
+<p class="section-desc">回访驱动器。首页 sticky 侧栏，混合内容流。</p>
+
+<h3>内容类型</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>类型</th><th>图标</th><th>颜色</th><th>来源</th><th>平均频率</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>活动 Promo</strong></td><td>🎁</td><td><span class="badge green">GREEN</span></td><td>运营</td><td>4-8 条/周</td></tr>
+    <tr><td><strong>费率变动 Fee Change</strong></td><td>📊</td><td><span class="badge yellow">YELLOW</span></td><td>运营</td><td>2-3 条/周</td></tr>
+    <tr><td><strong>功能更新 Feature</strong></td><td>🆕</td><td><span class="badge blue">BLUE</span></td><td>运营</td><td>1-2 条/周</td></tr>
+    <tr><td><strong>技巧 Tip</strong></td><td>💡</td><td><span class="badge purple">PURPLE</span></td><td>运营</td><td>1-2 条/周</td></tr>
+    <tr><td><strong>Slash 报告</strong></td><td>/</td><td><span class="badge red">RED</span></td><td>用户</td><td>事件驱动</td></tr>
+    <tr><td><strong>评价 Review</strong></td><td>★</td><td><span class="badge purple">PURPLE</span></td><td>用户</td><td>不定期</td></tr>
+  </tbody>
+</table>
+
+<h3>Feed 条目结构</h3>
+<div class="wireframe">
+<pre>
+  ┌─┬──────────────────────────────────────────────────────┐
+  │▌│  [🎁]   Rain <span class="hl-green">PROMO</span>                         3h ago │    ← 元信息：图标 + 卡 + 类型 + 时间
+  │▌│         <strong>Weekend 5% cashback on dining</strong>            │    ← 标题
+  │▌│         Expires Apr 14                               │    ← 过期时间（如适用）
+  │▌│         [✓ 3]  [✗ 0]                                 │    ← 投票按钮
+  └─┴──────────────────────────────────────────────────────┘
+   └─ 左边框颜色按类型区分
+</pre>
+</div>
+
+<h3>Confirm / Deny 机制</h3>
+<div class="callout">
+  <div class="title">V1 最重要的 UX 决策</div>
+  <p>Confirm/Deny 是 V1 中<strong>用户对情报的唯一贡献方式</strong>。因为只需一次点击，它能以约 100:1 的比例把被动读者转化为参与者（对比任何 UGC 提交）。</p>
+</div>
+
+<div class="spec-block">
+  <div class="spec-row"><div class="k">按钮样式</div><div class="v"><code>[✓ N]</code> 绿色描边 · <code>[✗ N]</code> 红色描边。紧凑（8×24px padding）。tabular-nums。</div></div>
+  <div class="spec-row"><div class="k">单次投票</div><div class="v">投票后两个按钮都禁用。选中按钮填充，另一个淡化（opacity 0.4）。</div></div>
+  <div class="spec-row"><div class="k">持久化</div><div class="v">V1：仅内存（刷新重置）。V2：localStorage + 服务端去重。</div></div>
+  <div class="spec-row"><div class="k">审核</div><div class="v">如果 deny &gt; confirm + 3，标记待运营审查。deny &gt; 10 自动隐藏。<em>[V1.1]</em></div></div>
+</div>
+
+<h3>Feed 筛选</h3>
+<p>Feed 顶部的 tab 控件：<strong>All · Intel · Reports</strong></p>
+<ul>
+  <li><strong>All</strong>：intel + slash + reviews，按时间</li>
+  <li><strong>Intel</strong>：仅运营发布的情报（promo/fee/feature/tip）</li>
+  <li><strong>Reports</strong>：仅 slash 报告</li>
+</ul>
+
+<h3>Feed 排序</h3>
+<p>V1：严格时间顺序（最新在前）。</p>
+<p>V2 考虑：按 confirm - deny 加权（质量信号）。置顶高优先级条目（新活动、红色状态卡告警）24h。</p>
+
+<!-- === 章节 11：内容供给 === -->
+<h2 class="section" id="s11" data-num="07 — 功能">内容供给模型</h2>
+<p class="section-desc">谁创建什么。这是 V1 与竞品的关键分野。</p>
+
+<h3>供给分工</h3>
+<div class="grid-2">
+  <div class="card">
+    <span class="badge blue">运营 / 管理</span>
+    <h4 style="margin-top:12px;">团队整理的内容</h4>
+    <ul>
+      <li>🎁 活动情报</li>
+      <li>📊 费率变动</li>
+      <li>🆕 功能更新</li>
+      <li>💡 技巧</li>
+    </ul>
+    <p style="font-size:12px;color:var(--text-3);margin:12px 0 0;"><strong>来源：</strong>监控 TG 群、X 账号、官方公告。V1 通过 Supabase dashboard 手动录入（不需要管理后台 UI）。</p>
+  </div>
+  <div class="card">
+    <span class="badge purple">用户</span>
+    <h4 style="margin-top:12px;">用户贡献的内容</h4>
+    <ul>
+      <li>⭐️ 评价（完整提交）</li>
+      <li>/ Slash 报告（完整提交）</li>
+      <li>✓/✗ Confirm/Deny（一次点击）</li>
+    </ul>
+    <p style="font-size:12px;color:var(--text-3);margin:12px 0 0;"><strong>动机：</strong>评价 = 无门槛的情绪输出。报告 = 愤怒。Confirm = 近零成本参与。</p>
+  </div>
+</div>
+
+<h3>V1 为什么不接受用户提交情报</h3>
+<div class="callout yellow">
+  <div class="title">冷启动现实</div>
+  <p>我们分析过每种内容类型的用户动机。正向情报（活动、技巧）的创作需要声誉、积分或社区归属感激励 —— V1 都没有。让匿名用户提交情报 = 空情报流。</p>
+  <p>改为：V1 团队承担供给。用户承担验证（confirm/deny）。当用户量达到一定规模（~1000 DAU），再开放用户提交情报，配合适度审核。</p>
+</div>
+
+<h3>运营手册（内部团队）</h3>
+<ol>
+  <li><strong>每日：</strong>扫 X + TG 群找卡片新闻。带 source link 发布。</li>
+  <li><strong>每周：</strong>至少发 1 条 tip。如有 deal，发 4-8 条 promo。</li>
+  <li><strong>每月：</strong>审计所有卡片的费率变化列表。对比官方费率表。</li>
+  <li><strong>事件驱动：</strong>当某卡事件激增时，写一条 summary 情报为活动加上下文。</li>
+</ol>
+
+<!-- === 章节 12：状态算法 === -->
+<h2 class="section" id="s12" data-num="07 — 功能">状态指示器算法</h2>
+<p class="section-desc">绿 / 黄 / 红 如何决定。</p>
+
+<h3>规则</h3>
+<div class="wireframe">
+<pre>
+  <span class="hl-green">绿 (Normal)</span>         recent_slash_count ≤ 5
+  <span class="hl-yellow">黄 (Issues)</span>         5 &lt; recent_slash_count ≤ 15
+  <span class="hl-red">红 (Critical)</span>       recent_slash_count &gt; 15
+
+  recent_slash_count = slash_reports WHERE created_at &gt; now() - 7 days
+</pre>
+</div>
+
+<h3>为什么用 7 天滑动窗口</h3>
+<p>用固定"全部时间"的阈值会导致状态永久不变。滑动窗口让状态自愈 —— 老报告过期后状态会恢复。如果某卡 2 个月前有尖峰但现在正常，会恢复到绿色。</p>
+
+<h3>为什么用绝对阈值（不是比例）</h3>
+<p>基于比例的阈值（如"报告/用户数"）需要知道每卡用户基数 —— 我们不知道。绝对阈值简单，可以根据预期量校准。等有流量数据后再按卡片热度调整。</p>
+
+<h3>视觉处理</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name" style="color:var(--green);">绿</div>
+    <div class="state-desc">Badge "Normal"。脉冲点。卡片无光晕。平静、不打扰。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name" style="color:var(--yellow);">黄</div>
+    <div class="state-desc">Badge "Issues (N)"。脉冲琥珀点。详情页微黄光晕。首页脉冲警示条。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name" style="color:var(--red);">红</div>
+    <div class="state-desc">Badge "Critical (N)"。脉冲红点。详情页强红光晕。优先警示条。Trending 排序置顶。</div>
+  </div>
+</div>
+
+<h3>反作弊考虑</h3>
+<div class="callout red">
+  <div class="title">风险：刷榜 / 竞品攻击</div>
+  <p>V1 开放匿名提交。竞品可以提交 20 条 slash 报告把对手搞成红色。</p>
+  <p><strong>缓解（V1.1）：</strong>按 IP + 浏览器指纹限流（每卡 24h 1 条）。要求 confirm/deny 投票加入状态计算（低 confirm 的报告权重低）。</p>
+</div>
+
+<!-- === 章节 13：设计系统 === -->
+<h2 class="section" id="s13" data-num="08 — 设计">设计系统</h2>
+<p class="section-desc">Token、色板、字体。基于 Linear × Vercel × Stripe 融合。</p>
+
+<h3>颜色 Token</h3>
+
+<h4>表面层（dark-theme native）</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#08090a;"></div><div class="swatch-name">Canvas</div><div class="swatch-hex">#08090A</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#0f1011;"></div><div class="swatch-name">Surface</div><div class="swatch-hex">#0F1011</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#191a1b;"></div><div class="swatch-name">Surface 2</div><div class="swatch-hex">#191A1B</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#28282c;"></div><div class="swatch-name">Surface 3</div><div class="swatch-hex">#28282C</div></div>
+</div>
+
+<h4>文字层级</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#f7f8f8;"></div><div class="swatch-name">Text primary</div><div class="swatch-hex">#F7F8F8</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#d0d6e0;"></div><div class="swatch-name">Text 2</div><div class="swatch-hex">#D0D6E0</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#8a8f98;"></div><div class="swatch-name">Text 3</div><div class="swatch-hex">#8A8F98</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#62666d;"></div><div class="swatch-name">Text 4</div><div class="swatch-hex">#62666D</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#4a4d54;"></div><div class="swatch-name">Text 5</div><div class="swatch-hex">#4A4D54</div></div>
+</div>
+
+<h4>品牌 & 语义色</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#7170ff;"></div><div class="swatch-name">Brand</div><div class="swatch-hex">#7170FF</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#5e6ad2;"></div><div class="swatch-name">Brand-2</div><div class="swatch-hex">#5E6AD2</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#27a644;"></div><div class="swatch-name">Green (success)</div><div class="swatch-hex">#27A644</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#f59e0b;"></div><div class="swatch-name">Yellow (warn)</div><div class="swatch-hex">#F59E0B</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#ef4444;"></div><div class="swatch-name">Red (critical)</div><div class="swatch-hex">#EF4444</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#0a72ef;"></div><div class="swatch-name">Blue (info)</div><div class="swatch-hex">#0A72EF</div></div>
+</div>
+
+<h3>字体</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>角色</th><th>尺寸</th><th>字重</th><th>字距</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Display hero</td><td>44-56px</td><td>300</td><td>-0.04em</td><td>首页 H1</td></tr>
+    <tr><td>Page title</td><td>22px</td><td>500</td><td>-0.02em</td><td>卡片详情 H1</td></tr>
+    <tr><td>Section heading</td><td>13px</td><td>500</td><td>normal</td><td>"Reviews"、"Active Promos"</td></tr>
+    <tr><td>Card title</td><td>15px</td><td>600</td><td>-0.01em</td><td>网格里的卡名</td></tr>
+    <tr><td>Body</td><td>13px</td><td>400</td><td>normal</td><td>评价正文、情报内容</td></tr>
+    <tr><td>Small</td><td>12px</td><td>400-500</td><td>normal</td><td>元数据、时间戳</td></tr>
+    <tr><td>Micro</td><td>11px</td><td>500-600</td><td>normal</td><td>Pills、badges</td></tr>
+    <tr><td>Nano</td><td>10px</td><td>600</td><td>0.05em</td><td>大写标签</td></tr>
+  </tbody>
+</table>
+
+<p><strong>字体：</strong>Inter Variable，全局启用 <code>font-feature-settings: "cv01", "ss01"</code>（Linear 风格的几何替字）。</p>
+
+<h3>阴影系统（shadow-as-border）</h3>
+<div class="callout">
+  <div class="title">借鉴 Vercel 技术：用阴影而非 CSS border 画边框</div>
+  <p>这样能得到更平滑的圆角、避免交叉处的双边框，且边框存在于阴影层有更好的融合。</p>
+</div>
+
+<div class="wireframe">
+<pre>
+  标准卡片          box-shadow: rgba(255,255,255,0.06) 0 0 0 1px,
+                               rgba(50,50,93,0.08) 0 2px 4px,
+                               rgba(0,0,0,0.12) 0 4px 12px -4px;
+
+  Hover            box-shadow: rgba(255,255,255,0.10) 0 0 0 1px,
+                               rgba(50,50,93,0.12) 0 4px 8px,
+                               rgba(0,0,0,0.16) 0 8px 24px -8px;
+
+  红状态卡          box-shadow: rgba(239,68,68,0.25) 0 0 0 1px,
+                               rgba(239,68,68,0.08) 0 2px 4px,
+                               rgba(239,68,68,0.06) 0 8px 24px -4px;
+
+  高层弹窗         box-shadow: rgba(50,50,93,0.25) 0 13px 27px -5px,
+                               rgba(0,0,0,0.3) 0 8px 16px -8px;
+</pre>
+</div>
+
+<h3>间距体系</h3>
+<p>8px 基础单位。尺度：2、4、6、8、10、12、16、20、24、32、40、48、64、80、96 px。</p>
+
+<h3>圆角体系</h3>
+<ul>
+  <li><code>4px</code> —— micro pills、小 chips</li>
+  <li><code>6px</code> —— tab 按钮</li>
+  <li><code>8px</code> —— 输入框、小按钮</li>
+  <li><code>10px</code> —— 标准按钮、小卡片</li>
+  <li><code>12px</code> —— 卡片、弹窗</li>
+  <li><code>14px</code> —— 信用卡视觉</li>
+  <li><code>16px</code> —— 大卡片、弹窗容器</li>
+  <li><code>9999px</code> —— pills、状态 badge</li>
+</ul>
+
+<!-- === 章节 14：组件 === -->
+<h2 class="section" id="s14" data-num="08 — 设计">组件库</h2>
+<p class="section-desc">所有可复用 UI 组件，含状态。</p>
+
+<h3>按钮（主操作）</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">尺寸</div><div class="v">Padding：10px 纵向，全宽或按内容。字体：13-14px 中字重。</div></div>
+  <div class="spec-row"><div class="k">背景</div><div class="v">线性渐变 135deg，#5e6ad2 → #7170ff</div></div>
+  <div class="spec-row"><div class="k">阴影</div><div class="v">rgba(113,112,255,0.25) 0 4px 12px（品牌光晕）</div></div>
+  <div class="spec-row"><div class="k">文字</div><div class="v">#fff，中字重 14px</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">opacity 0.9</div></div>
+  <div class="spec-row"><div class="k">Disabled</div><div class="v">opacity 0.5，cursor not-allowed</div></div>
+  <div class="spec-row"><div class="k">用途</div><div class="v">主 CTA："Submit Review"、"Write a Review"、"Share to X"（变体：黑色背景）</div></div>
+</div>
+
+<h3>按钮（破坏性描边）</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">背景</div><div class="v">transparent</div></div>
+  <div class="spec-row"><div class="k">阴影</div><div class="v">rgba(239,68,68,0.2) 0 0 0 1px（红色描边）</div></div>
+  <div class="spec-row"><div class="k">文字</div><div class="v">#ef4444，中字重</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">背景 rgba(239,68,68,0.08)</div></div>
+  <div class="spec-row"><div class="k">用途</div><div class="v">"/ Slash Report"、"Submit Slash Report"（表单上的填充红色变体）</div></div>
+</div>
+
+<h3>按钮（中性次级）</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">背景</div><div class="v">transparent</div></div>
+  <div class="spec-row"><div class="k">阴影</div><div class="v">rgba(255,255,255,0.06) 0 0 0 1px</div></div>
+  <div class="spec-row"><div class="k">文字</div><div class="v">#8a8f98</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">背景 rgba(255,255,255,0.04)，文字 #d0d6e0</div></div>
+  <div class="spec-row"><div class="k">用途</div><div class="v">"Back to X"、"Close"、"📤 Share" 图标按钮</div></div>
+</div>
+
+<h3>输入框</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">背景</div><div class="v">rgba(255,255,255,0.02)</div></div>
+  <div class="spec-row"><div class="k">阴影（默认）</div><div class="v">rgba(255,255,255,0.06) 0 0 0 1px</div></div>
+  <div class="spec-row"><div class="k">阴影（聚焦）</div><div class="v">rgba(113,112,255,0.3) 0 0 0 1px, rgba(113,112,255,0.1) 0 0 0 4px（ring）</div></div>
+  <div class="spec-row"><div class="k">聚焦色区分</div><div class="v">评价表单 = 靛青色。Slash 表单 = 红色。</div></div>
+  <div class="spec-row"><div class="k">Placeholder</div><div class="v">#4a4d54</div></div>
+  <div class="spec-row"><div class="k">文字</div><div class="v">#d0d6e0，13px</div></div>
+  <div class="spec-row"><div class="k">圆角</div><div class="v">textarea 12px，input 12px</div></div>
+</div>
+
+<h3>Pill / Badge</h3>
+<ul>
+  <li><strong>中性 pill</strong>：#8a8f98 文字，1px 白描边阴影，4px 圆角，用于标签</li>
+  <li><strong>彩色 pill</strong>：语义色背景 + 阴影（绿/黄/红/蓝/紫），4px 圆角，大写</li>
+  <li><strong>状态 badge</strong>：pill 形状（9999px 圆角），带脉冲点 + 标签</li>
+  <li><strong>Micro badge</strong>：10px 文字，2px 纵向 padding，用于内联强调如 "PROMO"</li>
+</ul>
+
+<h3>信用卡视觉</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">宽高比</div><div class="v">1.586（标准信用卡）</div></div>
+  <div class="spec-row"><div class="k">尺寸</div><div class="v"><code>sm</code> 100% 宽 · <code>md</code> 最大 320px · <code>lg</code> 最大 400px</div></div>
+  <div class="spec-row"><div class="k">渐变</div><div class="v">每张卡独特的 3 阶渐变。深色金属色板。</div></div>
+  <div class="spec-row"><div class="k">元素</div><div class="v">金色芯片（左上）+ 感应图标（右上）+ 卡名（左下，大写 0.1em 字距）+ card_type + Visa/Mastercard SVG（右下）</div></div>
+  <div class="spec-row"><div class="k">效果</div><div class="v">噪点覆盖层（2.5% 不透明度 SVG fractal）+ 径向渐变光斑 + 内高光边框 + 状态光晕</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">3D 倾斜：rotateY -3deg, rotateX 2deg, perspective 800px, cubic-bezier(0.23, 1, 0.32, 1) 0.4s</div></div>
+  <div class="spec-row"><div class="k">活动态</div><div class="v">动画绿色微光覆盖层：3s 线性对角扫过</div></div>
+</div>
+
+<h3>星级评分</h3>
+<ul>
+  <li><strong>展示模式</strong>：5 颗星，sm/md/lg 尺寸。已填 = 金色 #f59e0b。空 = rgba(255,255,255,0.08)。</li>
+  <li><strong>输入模式</strong>：28px 星星，8px 间距，hover:scale-110。选中星带金色阴影光晕。</li>
+  <li><strong>V1 不支持半颗星</strong>（均分采用 Math.round）。</li>
+</ul>
+
+<h3>状态 Badge</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">结构</div><div class="v">脉冲点 + 标签 + 可选计数</div></div>
+  <div class="spec-row"><div class="k">绿</div><div class="v">"Normal"（无脉冲）</div></div>
+  <div class="spec-row"><div class="k">黄</div><div class="v">"Issues N"（脉冲）</div></div>
+  <div class="spec-row"><div class="k">红</div><div class="v">"Critical N"（脉冲）</div></div>
+</div>
+
+<!-- === 章节 15：交互 === -->
+<h2 class="section" id="s15" data-num="09 — 交互">交互模式</h2>
+<p class="section-desc">所有页面一致的行为。</p>
+
+<h3>表单提交模式</h3>
+<div class="flow">
+  <div class="flow-step">用户填写</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">客户端验证</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">失败时内联报错</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">成功：状态变更 + 过渡视图</div>
+</div>
+
+<h3>评价表单成功 → 自动跳转（1.5s）</h3>
+<h3>Slash 表单成功 → 分享流程（用户主导下一步动作）</h3>
+
+<h3>Hover 反馈矩阵</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>元素</th><th>Hover 行为</th><th>时长</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>卡片网格项</td><td>上浮 4px + 信用卡 3D 倾斜</td><td>400ms ease-out</td></tr>
+    <tr><td>主按钮</td><td>Opacity 0.9</td><td>瞬间</td></tr>
+    <tr><td>中性按钮</td><td>背景填充</td><td>瞬间</td></tr>
+    <tr><td>Feed 项</td><td>背景 white/0.015</td><td>200ms</td></tr>
+    <tr><td>链接文字</td><td>颜色变化</td><td>瞬间</td></tr>
+    <tr><td>星级输入</td><td>Scale 1.1</td><td>瞬间</td></tr>
+  </tbody>
+</table>
+
+<h3>Loading / 空态 / 错误态</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name">Loading (V1)</div>
+    <div class="state-desc">Mock 数据，无需 loader。V1.1（Supabase）：网格 skeleton shimmer，200ms 淡入。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">空 — 无评价</div>
+    <div class="state-desc">"No reviews yet" + CTA "Be the first to review →"</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">空 — 无情报</div>
+    <div class="state-desc">整个区块隐藏（不渲染空 header）。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">错误 — 表单验证</div>
+    <div class="state-desc">提交按钮上方红色 callout，具体错误文案。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">错误 — 网络 (V1.1)</div>
+    <div class="state-desc">Toast："Couldn't submit. Try again?" + 重试动作。</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">404 — 未知卡</div>
+    <div class="state-desc">居中 "Card not found"。V1.1：推荐相似卡名。</div>
+  </div>
+</div>
+
+<h3>动画</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>动画</th><th>用途</th><th>时长</th><th>缓动</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pulse</td><td>状态点、警示条点</td><td>2s 循环</td><td>ease-in-out</td></tr>
+    <tr><td>3D 倾斜</td><td>卡片视觉 hover</td><td>400ms</td><td>cubic-bezier(0.23, 1, 0.32, 1)</td></tr>
+    <tr><td>Shimmer</td><td>卡片视觉活动覆盖层</td><td>3s 循环</td><td>ease-in-out</td></tr>
+    <tr><td>Lift</td><td>网格项 hover</td><td>300ms</td><td>ease</td></tr>
+    <tr><td>Opacity 淡入</td><td>状态切换</td><td>200ms</td><td>ease</td></tr>
+  </tbody>
+</table>
+
+<!-- === 章节 16：响应式 === -->
+<h2 class="section" id="s16" data-num="09 — 交互">响应式行为</h2>
+<p class="section-desc">Mobile-first。断点与适配。</p>
+
+<h3>断点</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>名称</th><th>宽度</th><th>目标设备</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mobile</td><td>&lt; 640px</td><td>手机（竖屏）</td></tr>
+    <tr><td>Tablet</td><td>640 - 1024px</td><td>平板、手机（横屏）、小屏笔记本</td></tr>
+    <tr><td>Desktop</td><td>≥ 1024px</td><td>标准笔记本、显示器</td></tr>
+    <tr><td>Large</td><td>≥ 1200px</td><td>内容最大宽度</td></tr>
+  </tbody>
+</table>
+
+<h3>各页面适配</h3>
+
+<h4>首页</h4>
+<ul>
+  <li><strong>Mobile：</strong>Hero 32px。侧栏堆叠到网格下方。网格 1 列。分类 pills 横向滚动。</li>
+  <li><strong>Tablet：</strong>Hero 44px。网格 2 列。侧栏堆叠下方。</li>
+  <li><strong>Desktop：</strong>Hero 56px。网格 3 列。侧栏在网格旁（300px）。</li>
+</ul>
+
+<h4>卡片详情</h4>
+<ul>
+  <li><strong>Mobile：</strong>信用卡视觉 100% 宽（最大 400px）。标签换行。padding 缩到 16px。</li>
+  <li><strong>操作按钮：</strong>始终横排，flex-1 分配宽度。</li>
+</ul>
+
+<h4>表单</h4>
+<ul>
+  <li><strong>Mobile：</strong>全宽（最大 520px）。问题类型网格保持 2 列（字号更小）。</li>
+</ul>
+
+<h3>触控目标</h3>
+<p>移动端所有交互元素触控区 ≥ 40px。按钮默认高度 40-44px。</p>
+
+<!-- === 章节 17：文案 === -->
+<h2 class="section" id="s17" data-num="10 — 内容">文案与语气</h2>
+<p class="section-desc">语气准则与微文案约定。</p>
+
+<h3>语气原则</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>✓ 做</h4>
+    <ul style="font-size:13px;">
+      <li>直接。"Please select a rating" 不是 "A valid rating must be selected"</li>
+      <li>对卡片中立。不为任何卡背书或攻击。</li>
+      <li>对问题事实化。"3 reports this week" 不是 "灾难正在展开"</li>
+      <li>除专有名词外小写。</li>
+      <li>用 em-dash（—）停顿，不用冒号。</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>✕ 不做</h4>
+    <ul style="font-size:13px;">
+      <li>说教。（删掉了 "No shills. No sponsors."）</li>
+      <li>营销套话。不说 "revolutionary" "game-changing"。</li>
+      <li>正文用 emoji。只在特定 UI 位置（情报类型图标）用。</li>
+      <li>道歉。"Report submitted" 不是 "Sorry for the trouble!"</li>
+      <li>感叹号。永远不用。</li>
+    </ul>
+  </div>
+</div>
+
+<h3>微文案约定</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>场景</th><th>我们的文案</th><th>为什么不用替代方案</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>空评价</td><td>"No reviews yet"</td><td>不用 "Be the first!" —— 避免鼓动</td></tr>
+    <tr><td>分享按钮</td><td>"Share to X"</td><td>不用 "Tweet" —— X 已改名</td></tr>
+    <tr><td>Slash 表单标题</td><td>"/ Slash Report"</td><td>slash 符号本身就是品牌元素</td></tr>
+    <tr><td>状态</td><td>"Normal / Issues / Critical"</td><td>不用 "OK / Warning / Down" —— 更有语义</td></tr>
+    <tr><td>报告成功</td><td>"Help spread the word so others are warned"</td><td>把分享定义为利他，不是自我推广</td></tr>
+    <tr><td>评价提示</td><td>"Top-up speed? Freeze issues? Support quality?"</td><td>引导写作者，不规定结构</td></tr>
+  </tbody>
+</table>
+
+<!-- === 章节 18：无障碍 === -->
+<h2 class="section" id="s18" data-num="10 — 内容">无障碍</h2>
+<p class="section-desc">已达成的 a11y 标准和待补齐的缺口。</p>
+
+<h3>V1 已达成</h3>
+<ul>
+  <li>语义 HTML（正确的标题层级、nav、main、footer）</li>
+  <li>正文色对比度 ≥ AA 全表面</li>
+  <li>所有输入框 focus ring（4px 品牌色外光）</li>
+  <li>Viewport meta 标签（响应式缩放）</li>
+  <li>图片 alt 文本（卡片 logo）</li>
+  <li>表单 label 正确关联</li>
+</ul>
+
+<h3>缺口 / TODO (V1.1)</h3>
+<ul>
+  <li>键盘导航：tab 顺序已验证，但缺 skip-link</li>
+  <li>屏幕阅读器：脉冲点缺 aria-label（如 "live status indicator"）</li>
+  <li>色彩作为信息：状态指示器同时用色 + 标签（OK），但时间轴图仅用色 → 加 sr-only 文本</li>
+  <li>动效偏好：<code>prefers-reduced-motion</code> 未支持 → 需禁用 3D 倾斜 + 脉冲</li>
+  <li>星级输入：缺方向键导航</li>
+</ul>
+
+<!-- === 章节 19：增长闭环 === -->
+<h2 class="section" id="s19" data-num="11 — 增长">增长闭环</h2>
+<p class="section-desc">SlashCard 如何自我增长，不靠付费获客。</p>
+
+<h3>病毒机制</h3>
+<div class="wireframe">
+<pre>
+          ┌─────────────────────────────┐
+          │  用户经历卡片事故            │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ 在 X 搜 "X 卡冻了" → 找到    │
+          │ SlashCard 链接               │
+          │ 或通过 SEO 落地              │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ 读到 slash 报告，发现自己   │
+          │ 不孤单                       │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ 提交自己的 slash 报告        │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ 看到分享成功页               │
+          │ → 点击 "Share to X"         │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ 带 SlashCard 链接的推文      │
+          │ 传到关注者                   │
+          └────────────┬────────────────┘
+                       │
+                       ◄──── (闭环)
+</pre>
+</div>
+
+<h3>病毒系数估算</h3>
+<p>每次 slash 提交 → 约 25% 点 "Share to X"（参考类似金融事件 App）→ 平均推文触达约 300 关注者 → 推文到 SlashCard 点击率约 2% → 每次提交约带来 0.15 次新访问。</p>
+
+<p>按这个速率，光靠 slash 报告不足以规模化增长。计划补充：</p>
+<ul>
+  <li><strong>运营自动发推</strong>：当某卡进入 RED 状态，运营手动发状态卡片图（不需要改 UI，只是 playbook）</li>
+  <li><strong>周报</strong>：邮件订阅者收到 "This week in crypto cards" —— 高信号低成本留存</li>
+  <li><strong>可嵌入状态组件</strong>：卡方 / 博主可嵌入 "X 卡当前状态" badge → 反向链接（V2）</li>
+</ul>
+
+<!-- === 章节 20：边界 === -->
+<h2 class="section" id="s20" data-num="12 — 边界情况">空态与边界情况</h2>
+<p class="section-desc">缺失、错误、崩溃时的处理。</p>
+
+<table class="bordered">
+  <thead>
+    <tr><th>场景</th><th>当前处理</th><th>V1.1 改进</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>卡片无评价</td><td>"No reviews yet" + CTA</td><td>—</td></tr>
+    <tr><td>卡片无 slash 报告</td><td>分区隐藏</td><td>—</td></tr>
+    <tr><td>筛选结果为 0</td><td>空网格（无提示）</td><td>加 "No cards match" + 重置按钮</td></tr>
+    <tr><td>Feed 为空</td><td>空滚动区域</td><td>"No activity yet" 占位</td></tr>
+    <tr><td>无效卡 slug</td><td>居中 "Card not found"</td><td>返回首页链接 + 推荐卡片</td></tr>
+    <tr><td>卡名过长溢出</td><td>自动换行</td><td>20 字符后省略号</td></tr>
+    <tr><td>评价文字过长</td><td>显示全文</td><td>&gt; 500 字折叠 + "Read more"</td></tr>
+    <tr><td>卡片 logo 加载失败</td><td>降级为渐变首字母</td><td>—</td></tr>
+    <tr><td>提交时网络失败</td><td>静默失败（mock 数据）</td><td>错误 toast + 重试</td></tr>
+    <tr><td>用户双击提交</td><td>创建重复记录</td><td>防抖 + 提交中禁用按钮</td></tr>
+    <tr><td>Clipboard API 不可用</td><td>降级为 PNG 下载</td><td>—</td></tr>
+    <tr><td>分享弹窗被拦截</td><td>静默失败</td><td>检测 + 显示可复制的 fallback 链接</td></tr>
+  </tbody>
+</table>
+
+<!-- === 章节 21：待讨论 === -->
+<h2 class="section" id="s21" data-num="13 — 路线图">待讨论问题与 V2 路线图</h2>
+<p class="section-desc">需要讨论和接下来要做的事。</p>
+
+<h3>待讨论设计问题</h3>
+<ol>
+  <li><strong>"Trending" 排序语义：</strong>应该按报告最多（现状）还是按最近活动最多（无论正负）？即有大量新活动的卡也该 "trend"？</li>
+  <li><strong>警示条选择：</strong>目前显示第一个红/黄卡。应该是最新事件？还是最高计数？还是用户可配？</li>
+  <li><strong>评价表单字数门槛：</strong>10 字符下限合适吗？太高杀转化，太低招垃圾。V1.1 监控 spam 率。</li>
+  <li><strong>Feed 内情报排序：</strong>纯时间顺序还是按 confirm 加权？需要置顶机制吗？</li>
+  <li><strong>详情页 CTA 优先级：</strong>目前 Review 是主（靛青）。对有问题的卡正确吗？状态红时要不要切换成 Slash 为主？</li>
+</ol>
+
+<h3>V1.1（上线后 1-2 周）</h3>
+<ul>
+  <li>Supabase 后端（替换 mock 数据）</li>
+  <li>提交限流（每 IP 每卡每 24h 1 次）</li>
+  <li>原生 <code>alert()</code> 换成 toast 组件</li>
+  <li>筛选网格空态</li>
+  <li>支持 <code>prefers-reduced-motion</code></li>
+  <li>添加卡片时自动获取 logo（Clearbit Logo API）</li>
+</ul>
+
+<h3>V2（1-3 个月）</h3>
+<ul>
+  <li>邮件/TG bot "Watch a card" —— 推送费率变动、状态变化、新活动</li>
+  <li>运营情报发布后台（替代 Supabase dashboard）</li>
+  <li>评价搜索和筛选</li>
+  <li>卡片对比视图（"Rain vs RedotPay"）</li>
+  <li>多维度评分（原 spec 的 6 维度评分回归）</li>
+  <li>评价上下投票用于质量信号</li>
+  <li>中文本地化（简中为主）</li>
+</ul>
+
+<h3>V3 展望</h3>
+<ul>
+  <li>钱包签名验证（可选，加 "已验证持卡人" badge）</li>
+  <li>历史状态时间轴（查看过去 6 个月 X 卡何时变红/黄）</li>
+  <li>费率历史图（可视化费率演变）</li>
+  <li>可嵌入状态 widget</li>
+  <li>移动 App</li>
+  <li>用户提交情报（含审核）</li>
+  <li>卡方官方响应机制（"RedotPay 团队官方回复"）</li>
+</ul>
+
+<!-- === 章节 22：技术栈 === -->
+<h2 class="section" id="s22" data-num="14 — 技术">技术栈</h2>
+<p class="section-desc">仅供参考，不是设计讨论重点。</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>前端</h4>
+    <ul style="font-size:13px;">
+      <li>React 19 + Vite 8</li>
+      <li>Tailwind CSS 4（通过 <code>@tailwindcss/vite</code>）</li>
+      <li>React Router v7</li>
+      <li>MVP 未引入状态管理库（React Context）</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>后端（V1.1）</h4>
+    <ul style="font-size:13px;">
+      <li>Supabase（Postgres + REST + RLS）</li>
+      <li>V1 无认证（通过 RLS policy 允许匿名插入）</li>
+      <li>Supabase Storage 存评价截图</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>部署</h4>
+    <ul style="font-size:13px;">
+      <li>Vercel（从 <code>main</code> 自动部署）</li>
+      <li>自定义域名待定（当前 <code>crypto-card-review.vercel.app</code>）</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>仓库</h4>
+    <ul style="font-size:13px;">
+      <li><a href="https://github.com/realdora/slashcard">github.com/realdora/slashcard</a></li>
+      <li>MIT 许可（公开）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- === 附录 === -->
+<h2 class="section" id="appendix" data-num="A — 附录">附录</h2>
+
+<h3>设计决策日志</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>决策</th><th>理由</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>深色主题原生（非浅色带切换）</td><td>加密用户偏好深色。品牌更清晰。少一种模式维护。</td></tr>
+    <tr><td>渲染 CC 视觉（非 logo）</td><td>todey.xyz 用卡实物图（授权成本高）。CSS 渲染的卡避开法律风险且视觉独特。</td></tr>
+    <tr><td>匿名提交（无 auth）</td><td>低门槛 &gt; 高质量。质量问题靠 confirm/deny 而非 auth 解决。</td></tr>
+    <tr><td>运营专属情报创作</td><td>冷启动期用户不会产出情报。团队扮演编辑部。</td></tr>
+    <tr><td>单一评分（非 6 维度）</td><td>转化优先于分类学。多维度在 V2 有数据量时回归。</td></tr>
+    <tr><td>Slash 提交后不自动跳转</td><td>Slash 提交就是增长事件。专门的分享页才能抓住这个价值。</td></tr>
+    <tr><td>不接受用户提交情报</td><td>无声誉系统时动机不足。V2 功能。</td></tr>
+    <tr><td>保留 "Slash" 命名（非 "Report"）</td><td>"Slash" 独特、产品定义性强、/ 符号本身就是品牌。</td></tr>
+  </tbody>
+</table>
+
+<h3>风险与缓解</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>风险</th><th>严重度</th><th>缓解</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>竞品刷对手的假 slash 报告</td><td>中</td><td>限流 + confirm/deny 加权（V1.1）</td></tr>
+    <tr><td>卡方因负面报告发律师函</td><td>低</td><td>Footer 明确 "Independent, no affiliation"。UGC 类似 Section 230 保护。</td></tr>
+    <tr><td>情报准确性 —— 活动静默过期</td><td>中</td><td>过期日期字段自动隐藏过期活动。运营每周审。</td></tr>
+    <tr><td>没用户</td><td>高</td><td>创始人 X 运营。SEO 针对 "X card review" 词。交叉发布到相关 subreddit。</td></tr>
+    <tr><td>状态阈值过敏感（假警报）</td><td>中</td><td>数据积累后调优。起步保守（15 = 红）。</td></tr>
+  </tbody>
+</table>
+
+<div class="footnote">
+  <p>SlashCard 产品手册 · v1.0 · 2026-04-16 · 为设计 + 产品团队评审准备。所有交互模式和视觉决策已在 MVP 实现：<a href="https://crypto-card-review.vercel.app">crypto-card-review.vercel.app</a></p>
+</div>
+
+</div>
+</body>
+</html>
