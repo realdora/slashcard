@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlashCard — Product Specification v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #08090a;
+    --surface: #0f1011;
+    --surface-2: #191a1b;
+    --surface-3: #28282c;
+    --text: #f7f8f8;
+    --text-2: #d0d6e0;
+    --text-3: #8a8f98;
+    --text-4: #62666d;
+    --text-5: #4a4d54;
+    --border: rgba(255,255,255,0.06);
+    --border-2: rgba(255,255,255,0.10);
+    --brand: #7170ff;
+    --brand-2: #5e6ad2;
+    --green: #27a644;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #0a72ef;
+    --purple: #7170ff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "cv01", "ss01";
+    background: var(--bg);
+    color: var(--text-2);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    font-size: 14px;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* === Layout === */
+  .doc {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 48px;
+  }
+
+  @media (max-width: 768px) {
+    .doc { padding: 32px 20px; }
+  }
+
+  /* === Cover === */
+  .cover {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+  .cover .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: rgba(113,112,255,0.06);
+    box-shadow: rgba(113,112,255,0.2) 0 0 0 1px;
+    width: fit-content;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-size: 72px;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .cover .subtitle {
+    font-size: 22px;
+    color: var(--text-3);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    max-width: 680px;
+  }
+  .cover .meta {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    max-width: 700px;
+  }
+  .cover .meta-item .k {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-5);
+  }
+  .cover .meta-item .v {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .cover h1 { font-size: 44px; }
+    .cover .subtitle { font-size: 17px; }
+    .cover .meta { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* === Headings === */
+  h2.section {
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 80px 0 8px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  h2.section::before {
+    content: attr(data-num);
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--brand);
+    margin-bottom: 12px;
+  }
+  h2.section + .section-desc {
+    font-size: 15px;
+    color: var(--text-3);
+    margin-bottom: 32px;
+    font-weight: 300;
+    max-width: 720px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 40px 0 12px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin: 24px 0 8px;
+  }
+
+  p { margin-bottom: 12px; }
+  p + p { margin-top: 12px; }
+
+  /* === Content === */
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--text-3); font-style: normal; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { color: #828fff; }
+
+  /* === Callouts === */
+  .callout {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    background: rgba(113,112,255,0.04);
+    box-shadow: rgba(113,112,255,0.15) 0 0 0 1px;
+  }
+  .callout.green {
+    background: rgba(39,166,68,0.04);
+    box-shadow: rgba(39,166,68,0.15) 0 0 0 1px;
+  }
+  .callout.yellow {
+    background: rgba(245,158,11,0.04);
+    box-shadow: rgba(245,158,11,0.15) 0 0 0 1px;
+  }
+  .callout.red {
+    background: rgba(239,68,68,0.04);
+    box-shadow: rgba(239,68,68,0.15) 0 0 0 1px;
+  }
+  .callout .title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  .callout p { font-size: 13px; margin: 0; }
+
+  /* === Tables === */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-3);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 16px;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  table.bordered {
+    background: var(--surface);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+
+  /* === Cards === */
+  .card {
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 16px 0;
+  }
+  .card h4 { margin-top: 0; }
+
+  /* === Wireframe === */
+  .wireframe {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 24px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    overflow-x: auto;
+  }
+  .wireframe .wf-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-5);
+    margin-bottom: 12px;
+  }
+  .wireframe pre {
+    white-space: pre;
+    color: var(--text-3);
+    line-height: 1.4;
+    font-size: 11px;
+  }
+  .wireframe .hl { color: var(--brand); }
+  .wireframe .hl-green { color: var(--green); }
+  .wireframe .hl-red { color: var(--red); }
+  .wireframe .hl-yellow { color: var(--yellow); }
+
+  /* === Screen Mockups === */
+  .mockup {
+    background: var(--bg);
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 24px 0;
+    box-shadow: rgba(255,255,255,0.08) 0 0 0 1px, rgba(50,50,93,0.2) 0 16px 40px;
+  }
+  .mockup-bar {
+    padding: 12px 16px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--border) 0 1px 0;
+  }
+  .mockup-bar .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .mockup-bar .url {
+    flex: 1;
+    margin-left: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-4);
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border-radius: 6px;
+  }
+
+  /* === Badges === */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge.green { color: var(--green); background: rgba(39,166,68,0.08); box-shadow: rgba(39,166,68,0.15) 0 0 0 1px; }
+  .badge.yellow { color: var(--yellow); background: rgba(245,158,11,0.08); box-shadow: rgba(245,158,11,0.15) 0 0 0 1px; }
+  .badge.red { color: var(--red); background: rgba(239,68,68,0.08); box-shadow: rgba(239,68,68,0.15) 0 0 0 1px; }
+  .badge.blue { color: var(--blue); background: rgba(10,114,239,0.08); box-shadow: rgba(10,114,239,0.15) 0 0 0 1px; }
+  .badge.purple { color: var(--purple); background: rgba(113,112,255,0.08); box-shadow: rgba(113,112,255,0.15) 0 0 0 1px; }
+  .badge.gray { color: var(--text-3); background: rgba(255,255,255,0.04); box-shadow: var(--border) 0 0 0 1px; }
+
+  /* === Grid === */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* === TOC === */
+  .toc {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin-bottom: 64px;
+  }
+  .toc h4 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin: 0 0 16px;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    counter-reset: section;
+    columns: 2;
+    column-gap: 32px;
+  }
+  @media (max-width: 768px) { .toc ol { columns: 1; } }
+  .toc li {
+    counter-increment: section;
+    padding: 6px 0;
+    font-size: 13px;
+    break-inside: avoid;
+  }
+  .toc li::before {
+    content: counter(section, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-5);
+    margin-right: 12px;
+  }
+  .toc a {
+    color: var(--text-2);
+    border-bottom: 1px dashed transparent;
+  }
+  .toc a:hover {
+    color: var(--text);
+    border-bottom-color: var(--border-2);
+  }
+
+  /* === Component spec === */
+  .spec-block {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--border) 0 0 0 1px;
+    margin: 16px 0;
+  }
+  .spec-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-row .k {
+    color: var(--text-4);
+    font-weight: 500;
+  }
+  .spec-row .v { color: var(--text-2); }
+  @media (max-width: 640px) {
+    .spec-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* === State grid === */
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .state-item {
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+  .state-item .state-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 8px;
+  }
+  .state-item .state-desc {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  /* === Flow === */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--border) 0 0 0 1px;
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+  .flow-arrow {
+    color: var(--text-5);
+    font-size: 14px;
+  }
+
+  /* === Print === */
+  @media print {
+    body { background: white; color: black; }
+    .doc { padding: 0; max-width: 100%; }
+    .cover { min-height: auto; page-break-after: always; }
+    h2.section { page-break-before: always; }
+    a { color: #4338ca; }
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  .footnote {
+    font-size: 12px;
+    color: var(--text-4);
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+
+  /* === Color swatches === */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .swatch {
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: var(--border) 0 0 0 1px;
+  }
+  .swatch-color {
+    width: 100%;
+    height: 48px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .swatch-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .swatch-hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-4);
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+<!-- === COVER === -->
+<section class="cover">
+  <div class="label">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--brand);"></span>
+    Product Specification · v1.0 MVP
+  </div>
+  <h1>SlashCard</h1>
+  <div class="subtitle">The intelligence platform for crypto card holders. Real reviews, live status, and actionable intel — all in one place.</div>
+  <div class="meta">
+    <div class="meta-item"><div class="k">Document</div><div class="v">Product Spec v1.0</div></div>
+    <div class="meta-item"><div class="k">Date</div><div class="v">Apr 16, 2026</div></div>
+    <div class="meta-item"><div class="k">Status</div><div class="v">MVP Shipped</div></div>
+    <div class="meta-item"><div class="k">Live Site</div><div class="v"><a href="https://crypto-card-review.vercel.app">crypto-card-review.vercel.app</a></div></div>
+  </div>
+</section>
+
+<!-- === TOC === -->
+<div class="toc">
+  <h4>Table of Contents</h4>
+  <ol>
+    <li><a href="#s1">Executive Summary</a></li>
+    <li><a href="#s2">Product Vision & Thesis</a></li>
+    <li><a href="#s3">User Personas</a></li>
+    <li><a href="#s4">Jobs To Be Done</a></li>
+    <li><a href="#s5">Information Architecture</a></li>
+    <li><a href="#s6">Homepage Spec</a></li>
+    <li><a href="#s7">Card Detail Page Spec</a></li>
+    <li><a href="#s8">Review Form Spec</a></li>
+    <li><a href="#s9">Slash Report + Share Flow</a></li>
+    <li><a href="#s10">Intelligence Feed Spec</a></li>
+    <li><a href="#s11">Content Supply Model</a></li>
+    <li><a href="#s12">Status Indicator Logic</a></li>
+    <li><a href="#s13">Design System</a></li>
+    <li><a href="#s14">Component Library</a></li>
+    <li><a href="#s15">Interaction Patterns</a></li>
+    <li><a href="#s16">Responsive Behavior</a></li>
+    <li><a href="#s17">Copy & Voice</a></li>
+    <li><a href="#s18">Accessibility</a></li>
+    <li><a href="#s19">Growth Loop</a></li>
+    <li><a href="#s20">Empty & Edge States</a></li>
+    <li><a href="#s21">Open Questions & V2</a></li>
+    <li><a href="#s22">Technical Stack</a></li>
+  </ol>
+</div>
+
+<!-- === SECTION 1: EXECUTIVE SUMMARY === -->
+<h2 class="section" id="s1" data-num="01 — OVERVIEW">Executive Summary</h2>
+<p class="section-desc">What SlashCard is, who it's for, and why it exists. A one-page brief.</p>
+
+<h3>Product in one line</h3>
+<p>SlashCard is a dark-themed, dark-horse alternative to generic crypto card aggregators like <a href="https://todey.xyz">todey.xyz</a>. Instead of a static comparison table, it's a <strong>living intelligence platform</strong> — featuring real user reviews, live problem reports, curated promo/fee intel, and a social verification layer.</p>
+
+<h3>The problem we solve</h3>
+<p>Crypto card users today rely on scattered sources to make decisions:</p>
+<ul>
+  <li><strong>Twitter/X</strong> — noisy, unstructured, biased</li>
+  <li><strong>Telegram groups</strong> — buried conversations, per-card silos</li>
+  <li><strong>Aggregator sites (todey.xyz, cryptonomist)</strong> — one-time visit, no community signal, no real user experience</li>
+  <li><strong>Official card websites</strong> — marketing fluff, no incident data</li>
+</ul>
+<p>There is no <strong>canonical destination</strong> for the question: <em>"What's happening with crypto card X right now?"</em></p>
+
+<h3>Core MVP features</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>🎴 Card Directory</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">15 pre-listed crypto cards with rendered visuals, ratings, and metadata. Filterable by type (CEX / DeFi / Prepaid / Debit).</p>
+  </div>
+  <div class="card">
+    <h4>⭐️ User Reviews</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">1-5 star rating + free-text review + optional screenshot. No auth required, 10-char minimum.</p>
+  </div>
+  <div class="card">
+    <h4>/ Slash Reports</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">Quick incident reports (frozen funds, delays, KYC issues). Powers the Live Status indicator.</p>
+  </div>
+  <div class="card">
+    <h4>📡 Intelligence Feed</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">Ops-curated intel: promos, fee changes, feature updates, tips. With community confirm/deny.</p>
+  </div>
+  <div class="card">
+    <h4>🚦 Live Status Indicator</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">Green / Yellow / Red status per card, driven by 7-day rolling slash count.</p>
+  </div>
+  <div class="card">
+    <h4>📤 Shareable Status Card</h4>
+    <p style="font-size:13px;color:var(--text-3);margin:0;">Auto-generate a PNG status card post-submission. One-click share to X.</p>
+  </div>
+</div>
+
+<h3>Target user</h3>
+<p>Crypto-native consumers holding 1-3 crypto cards, actively spending USDC/USDT, primarily in APAC and EU regions. Age 22-40. Active on Crypto Twitter.</p>
+
+<h3>Core success metric</h3>
+<div class="callout">
+  <div class="title">North Star</div>
+  <p>When someone asks <em>"Is card X worth getting?"</em> or <em>"Is card X having issues?"</em> — SlashCard is the link that gets sent in reply.</p>
+</div>
+
+<!-- === SECTION 2: PRODUCT VISION === -->
+<h2 class="section" id="s2" data-num="02 — STRATEGY">Product Vision & Thesis</h2>
+<p class="section-desc">Our positioning against competitors and the core product bet.</p>
+
+<h3>The frequency thesis</h3>
+<p>There's a spectrum between <strong>one-time aggregator</strong> and <strong>daily habit app</strong>. Most crypto card users don't need a daily habit. But they need more than a one-time comparison site.</p>
+<div class="wireframe">
+  <div class="wf-label">Revisit frequency spectrum</div>
+<pre>
+  One-time                           Weekly                          Daily
+  │                                     │                               │
+  todey.xyz ─────────────── <span class="hl">SlashCard</span> ────────────── Twitter/X
+  (open once to pick)       (return for events +                 (daily scroll)
+                             promos + before top-up)
+</pre>
+</div>
+
+<h3>Why users return to SlashCard</h3>
+<ol>
+  <li><strong>Before a top-up</strong> — Check current fees, active promos, system status. <em>Weekly, reflexive check.</em></li>
+  <li><strong>When they see card news on X</strong> — Click a SlashCard link to get the full picture. <em>Event-driven.</em></li>
+  <li><strong>When they're burned</strong> — File a slash report to warn others. <em>Emotion-driven, high virality.</em></li>
+  <li><strong>When a friend asks</strong> — Send a link instead of typing a long answer. <em>Offloads information work.</em></li>
+</ol>
+
+<h3>Competitive positioning</h3>
+<table class="bordered">
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>todey.xyz</th>
+      <th>DownDetector</th>
+      <th style="color:var(--brand);">SlashCard</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Content type</td>
+      <td>Static comparison</td>
+      <td>Status reports</td>
+      <td>Reviews + status + intel</td>
+    </tr>
+    <tr>
+      <td>Revisit trigger</td>
+      <td>Shopping</td>
+      <td>Suspected outage</td>
+      <td>Multiple (top-up, events, promos)</td>
+    </tr>
+    <tr>
+      <td>Content supply</td>
+      <td>Admin-only</td>
+      <td>User-only</td>
+      <td>Hybrid (ops + user)</td>
+    </tr>
+    <tr>
+      <td>Community layer</td>
+      <td>None</td>
+      <td>Implicit (count)</td>
+      <td>Explicit (confirm/deny)</td>
+    </tr>
+    <tr>
+      <td>Shareability</td>
+      <td>Low</td>
+      <td>Medium</td>
+      <td>High (status card image)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Non-goals (V1)</h3>
+<div class="callout yellow">
+  <div class="title">What we are explicitly NOT doing in V1</div>
+  <p>❌ User accounts / auth &nbsp;·&nbsp; ❌ Wallet verification &nbsp;·&nbsp; ❌ Real-time card APIs &nbsp;·&nbsp; ❌ Referral/affiliate system &nbsp;·&nbsp; ❌ Mobile native app &nbsp;·&nbsp; ❌ Multilingual UI (EN-only) &nbsp;·&nbsp; ❌ User-submitted intel (ops-only in V1)</p>
+</div>
+
+<!-- === SECTION 3: USER PERSONAS === -->
+<h2 class="section" id="s3" data-num="03 — USERS">User Personas</h2>
+<p class="section-desc">Three primary personas drive our design decisions.</p>
+
+<div class="grid-3">
+  <div class="card">
+    <span class="badge blue">P1</span>
+    <h4 style="margin-top:12px;">The Card Shopper</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>Profile:</strong> About to get their first crypto card. Has ETH/USDC, wants to spend it IRL.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Goal:</strong> Pick the right card without getting burned.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Pain:</strong> Too many options, can't trust card issuer marketing, wants real experiences.</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>Visits:</strong> 2-3 times during research phase. Then rarely.</p>
+  </div>
+  <div class="card">
+    <span class="badge purple">P2</span>
+    <h4 style="margin-top:12px;">The Multi-Card Optimizer</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>Profile:</strong> Holds 2-3 crypto cards. Uses them interchangeably based on context.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Goal:</strong> Maximize value per transaction. Avoid fees, catch promos.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Pain:</strong> Card issuers silently change fees. Promos buried in TG.</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>Visits:</strong> Weekly before top-ups. Core revisit persona.</p>
+  </div>
+  <div class="card">
+    <span class="badge red">P3</span>
+    <h4 style="margin-top:12px;">The Burned User</h4>
+    <p style="font-size:12px;color:var(--text-3);margin:0;"><strong>Profile:</strong> Just had a bad experience. Card frozen, funds stuck, support AWOL.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Goal:</strong> Vent, warn others, find out if they're alone.</p>
+    <p style="font-size:12px;color:var(--text-3);margin:8px 0 0;"><strong>Pain:</strong> Angry. Wants immediate action.</p>
+    <p style="font-size:12px;color:var(--text-5);margin:8px 0 0;"><strong>Visits:</strong> Once during incident. High-virality emission.</p>
+  </div>
+</div>
+
+<h3>Persona priority in V1</h3>
+<p>P2 (Multi-Card Optimizer) is our <strong>primary retention target</strong>. P3 (Burned User) is our <strong>primary acquisition driver</strong> via shareable status cards. P1 (Card Shopper) is the <strong>secondary acquisition target</strong> (via SEO + organic discovery).</p>
+
+<!-- === SECTION 4: JOBS TO BE DONE === -->
+<h2 class="section" id="s4" data-num="04 — USERS">Jobs To Be Done</h2>
+<p class="section-desc">When users hire SlashCard, these are the jobs they want done.</p>
+
+<table class="bordered">
+  <thead>
+    <tr>
+      <th style="width:60%;">Job Statement</th>
+      <th>Persona</th>
+      <th>Primary Feature</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>When I'm choosing a crypto card, I want to see real user experiences — so I don't waste money on a bad one.</td>
+      <td><span class="badge blue">P1</span></td>
+      <td>Reviews + Ratings</td>
+    </tr>
+    <tr>
+      <td>When I'm about to top up, I want to check if my card is working and if there are any active promos — so I maximize value.</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>Status Indicator + Intel Feed</td>
+    </tr>
+    <tr>
+      <td>When I see someone mention card trouble on X, I want to verify if it's a widespread issue — so I know whether to worry.</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>Slash Timeline + Live Feed</td>
+    </tr>
+    <tr>
+      <td>When my card just froze, I want to tell the world — so others don't get burned and so I feel less alone.</td>
+      <td><span class="badge red">P3</span></td>
+      <td>Slash Report + Share to X</td>
+    </tr>
+    <tr>
+      <td>When a friend asks me which card to get, I want a link to send — so I don't have to explain it again.</td>
+      <td><span class="badge purple">P2</span></td>
+      <td>Card Detail URL (SEO)</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- === SECTION 5: IA === -->
+<h2 class="section" id="s5" data-num="05 — STRUCTURE">Information Architecture</h2>
+<p class="section-desc">Site map, URL structure, and navigation model.</p>
+
+<h3>Routes</h3>
+<div class="wireframe">
+  <div class="wf-label">URL structure</div>
+<pre>
+  /                          Homepage — card directory + intel feed
+  /card/:slug                Card detail — profile + intel + reviews
+  /card/:slug/review         Review form
+  /card/:slug/report         Slash report form
+  /card/:slug/report         (post-submit) Share success view
+</pre>
+</div>
+
+<h3>Navigation model</h3>
+<p>SlashCard uses a <strong>shallow hub-and-spoke model</strong>. Homepage is the hub. Each card detail is a spoke. Users return to hub between tasks.</p>
+
+<div class="wireframe">
+<pre>
+                           <span class="hl">┌─────────────┐</span>
+                           <span class="hl">│   HOMEPAGE  │</span>    ← Hub: card directory + feed
+                           <span class="hl">└──────┬──────┘</span>
+                                  │
+              ┌───────────────────┼───────────────────┐
+              ▼                   ▼                   ▼
+      ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+      │  Card Detail │    │  Card Detail │    │  Card Detail │
+      │    (Rain)    │    │  (RedotPay)  │    │    (...)     │
+      └───┬──────────┘    └──────────────┘    └──────────────┘
+          │
+          ├──► Write Review
+          │
+          └──► Slash Report ──► Share Success (with X button)
+</pre>
+</div>
+
+<h3>Persistent elements</h3>
+<ul>
+  <li><strong>Header:</strong> Sticky, backdrop-blurred. Logo (→ home), "Crypto Card Reviews" label, "Live" pulse indicator.</li>
+  <li><strong>Footer:</strong> Static, at bottom of every page. Disclaimer about independence from card issuers.</li>
+</ul>
+
+<!-- === SECTION 6: HOMEPAGE === -->
+<h2 class="section" id="s6" data-num="06 — PAGES">Homepage Spec</h2>
+<p class="section-desc">The hub. First impression. Most important page.</p>
+
+<h3>Layout (desktop, ≥1024px)</h3>
+<div class="wireframe">
+<pre>
+┌─────────────────────────────────────────────────────────────────┐
+│  [/] SlashCard        CRYPTO CARD REVIEWS           ● Live      │  ← Header
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│            <span class="hl-red">● RedotPay — 10 reports this week →</span>            │  ← Alert banner (conditional)
+│                                                                 │
+│                      Real reviews for                           │
+│                      crypto cards                               │  ← Hero heading
+│                                                                 │
+│   ┌────────────────────────────────────────────┐  ┌──────────┐ │
+│   │ [All] CEX  DeFi  Prepaid  Debit    [Trend] │  │ Intel    │ │
+│   ├────────────────────────────────────────────┤  │ Feed     │ │
+│   │                                            │  │          │ │
+│   │  ┌──────┐  ┌──────┐  ┌──────┐              │  │ /  RedotPay│ │
+│   │  │ CARD │  │ CARD │  │ CARD │              │  │    Frozen │ │
+│   │  │ img  │  │ img  │  │ img  │              │  │            │ │
+│   │  ├──────┤  ├──────┤  ├──────┤              │  │ 🎁 Rain    │ │
+│   │  │ Rain │  │RedotP│  │ Bybit│              │  │    5% promo│ │
+│   │  │ ★ 4.5│  │ ★ 2.5│  │ ★ 4.0│              │  │            │ │
+│   │  └──────┘  └──────┘  └──────┘              │  │ ...        │ │
+│   │                                            │  │            │ │
+│   │  ┌──────┐  ┌──────┐  ┌──────┐              │  │            │ │
+│   │  │ CARD │  │ CARD │  │ CARD │              │  │            │ │
+│   │  │ ...  │  │ ...  │  │ ...  │              │  │            │ │
+│   │  └──────┘  └──────┘  └──────┘              │  │            │ │
+│   └────────────────────────────────────────────┘  └──────────┘ │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│           SlashCard — Independent crypto card reviews           │  ← Footer
+└─────────────────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<h3>Elements</h3>
+
+<h4>1. Alert Banner (conditional)</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Purpose</div><div class="v">Surface the most critical status issue at page entry. Drives attention to Slash reports.</div></div>
+  <div class="spec-row"><div class="k">Visibility</div><div class="v">Only shown if at least one card has <code>yellow</code> or <code>red</code> status.</div></div>
+  <div class="spec-row"><div class="k">Selection</div><div class="v">First card (by current sort order) with yellow/red status.</div></div>
+  <div class="spec-row"><div class="k">Interaction</div><div class="v">Click → navigate to that card's detail page.</div></div>
+  <div class="spec-row"><div class="k">Copy pattern</div><div class="v"><code>{CARD_NAME} — {COUNT} reports this week</code></div></div>
+  <div class="spec-row"><div class="k">Micro-interactions</div><div class="v">Pulsing red/yellow dot (2s ease-in-out). Hover: scale 1.02.</div></div>
+</div>
+
+<h4>2. Hero Heading</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Copy</div><div class="v">"Real reviews for crypto cards" (line break between "for" and "crypto")</div></div>
+  <div class="spec-row"><div class="k">Type style</div><div class="v">Inter 300-weight, -0.04em letter-spacing. 32/44/56px responsive.</div></div>
+  <div class="spec-row"><div class="k">Decision</div><div class="v">Removed "No shills. No sponsors." subline — it was preachy. The reviews speak for themselves.</div></div>
+</div>
+
+<h4>3. Category Filter + Sort Row</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Categories</div><div class="v">All · CEX Cards · DeFi Native · Prepaid · Debit</div></div>
+  <div class="spec-row"><div class="k">Sort options</div><div class="v">Trending (default) · Top Rated · Most Reviewed</div></div>
+  <div class="spec-row"><div class="k">Default state</div><div class="v">Category: All · Sort: Trending</div></div>
+  <div class="spec-row"><div class="k">Trending logic</div><div class="v">Sort by <code>recentSlashCount DESC</code>, tiebreak by <code>reviewCount DESC</code>. Cards with active issues float to top.</div></div>
+  <div class="spec-row"><div class="k">Mobile</div><div class="v">Horizontal-scrollable pill group. <code>whitespace-nowrap + overflow-x-auto</code>.</div></div>
+  <div class="spec-row"><div class="k">Reasoning</div><div class="v">Category and sort are intentionally left-right separated because they serve different cognitive modes — categorical filter vs. priority ordering.</div></div>
+</div>
+
+<h4>4. Card Grid Items</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Layout</div><div class="v">3 columns (≥1024px) · 2 columns (640-1024px) · 1 column (&lt;640px)</div></div>
+  <div class="spec-row"><div class="k">Structure</div><div class="v">Credit card visual (top, full-width, 1.586 aspect ratio) + info block (bottom)</div></div>
+  <div class="spec-row"><div class="k">Info block</div><div class="v">Row 1: <code>name + ZH_alias + status_badge</code><br>Row 2: <code>★ rating + 4.5 + (12 reviews) + [Promo badge →]</code><br>Row 3: <code>pills: network | type | chain_1 | chain_2</code></div></div>
+  <div class="spec-row"><div class="k">Hover state</div><div class="v">Card lifts 4px upward. Credit card visual tilts in 3D (rotateY -3deg, rotateX 2deg, perspective 800px).</div></div>
+  <div class="spec-row"><div class="k">Status border</div><div class="v">Red cards have red-tinted shadow glow. Yellow cards have yellow-tinted glow. (Currently <strong>disabled on homepage</strong> to avoid visual noise — applied only on detail page.)</div></div>
+  <div class="spec-row"><div class="k">Promo shimmer</div><div class="v">Cards with active promos have a subtle animated green shimmer overlay on the credit card visual.</div></div>
+</div>
+
+<h4>5. Intelligence Feed Sidebar</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Position</div><div class="v">Sticky, right side, 300px wide. Below hero on mobile (stacks vertically).</div></div>
+  <div class="spec-row"><div class="k">Internal filters</div><div class="v">All · Intel · Reports</div></div>
+  <div class="spec-row"><div class="k">Content types</div><div class="v">See <a href="#s10">§10 Intelligence Feed Spec</a></div></div>
+  <div class="spec-row"><div class="k">Max items</div><div class="v">Latest 30, scrollable. Max-height 580px on desktop.</div></div>
+</div>
+
+<h3>Homepage states</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name">Default</div>
+    <div class="state-desc">15 cards, Trending sort. RedotPay at top (red status). Alert banner shown.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Filtered (empty)</div>
+    <div class="state-desc">If filter+sort produce 0 results: show empty state "No cards match these filters" with reset button. <em>[TODO in V1.1]</em></div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">All green</div>
+    <div class="state-desc">No card has yellow/red status. Alert banner hidden. Calm state.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Loading</div>
+    <div class="state-desc">MVP uses mock data, loads instantly. Once hooked to Supabase, add skeleton shimmer for card grid (200ms).</div>
+  </div>
+</div>
+
+<!-- === SECTION 7: CARD DETAIL === -->
+<h2 class="section" id="s7" data-num="06 — PAGES">Card Detail Page Spec</h2>
+<p class="section-desc">The deep-dive. Used for research, diagnosis, and filing reports.</p>
+
+<h3>Layout (desktop)</h3>
+<div class="wireframe">
+<pre>
+  ← All Cards
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                                                             │
+  │              ┌─────────────────────────┐                    │
+  │              │                         │                    │
+  │              │    [ Credit card        │                    │  ← Header with CC visual
+  │              │      rendered visual ]  │                    │
+  │              │                         │                    │
+  │              └─────────────────────────┘                    │
+  │                                                             │
+  │              RedotPay  (● Critical 16)  🎁 2 promos         │
+  │              One-line description...                        │
+  │              ★★★☆☆  2.5  (3 reviews)                        │
+  │              [Visa] [prepaid] [Ethereum] [Polygon] ...      │
+  │              [USDC] [USDT]                                  │
+  │              Global excl. US · redotpay.com                 │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+
+  [  Write Review (primary)  ] [  / Slash Report  ] [📤]          ← Action row
+
+  ┌─ Active Promos ─────────────────────────────────────────────┐
+  │                                                             │
+  │ 🎁 Weekend 5% cashback on dining                            │
+  │    Details... · Expires Apr 14                              │
+  │    [✓ Confirm · 3]  [✗ Deny · 0]    SlashCard Team · 3h     │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─ Fee Changes ───────────────────────────────────────────────┐
+  │ 📊 Top-up fee increased: 0.8% → 1.2%                        │
+  │    ...                                                      │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─ Reports — Last 24h ────────────────────────────────────────┐
+  │ ██░ ░ ░██░ ██ ░░ █░  ░░░░░░░░░░░░░░░░ ░░                   │  ← 24h bar chart
+  │ 24h ago                                           Now       │
+  └─────────────────────────────────────────────────────────────┘
+
+  Recent Reports
+  ─ 🧊 Frozen Funds · 12m ago — "Another freeze, third time"
+  ─ 🧊 Frozen Funds · 2h ago — ...
+
+  Tips · Feature Updates · Reviews (all stacked)
+</pre>
+</div>
+
+<h3>Elements</h3>
+
+<h4>1. Header Card</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">CC visual</div><div class="v">Size: <code>lg</code> (max 400px wide). Centered. Always shown, even for cards with logo_url.</div></div>
+  <div class="spec-row"><div class="k">Glow</div><div class="v">Red-status cards get red glow shadow (0 0 40px rgba(239,68,68,0.2)). Yellow gets yellow. Green gets subtle neutral shadow.</div></div>
+  <div class="spec-row"><div class="k">Title row</div><div class="v">Card name (22px medium) · ZH alias · Status badge · Active promo count badge (if > 0)</div></div>
+  <div class="spec-row"><div class="k">Description</div><div class="v">Max 500px width, 13px muted text, 1-2 sentences.</div></div>
+  <div class="spec-row"><div class="k">Rating</div><div class="v">Stars (md size, 15px) · rating number (tabular-nums) · "N reviews"</div></div>
+  <div class="spec-row"><div class="k">Metadata pills</div><div class="v">Two rows — Row 1: network/type/chains; Row 2: supported assets (indigo-tinted pills)</div></div>
+  <div class="spec-row"><div class="k">Footer line</div><div class="v">Service regions · <a>clickable website URL</a></div></div>
+</div>
+
+<h4>2. Action Row</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Buttons</div><div class="v">
+    <strong>Write a Review</strong> — Primary, indigo gradient, flex-1<br>
+    <strong>/ Slash Report</strong> — Red outline, flex-1<br>
+    <strong>📤 Share Status</strong> — Icon-only, 40px wide, neutral
+  </div></div>
+  <div class="spec-row"><div class="k">Hierarchy rationale</div><div class="v">Review is primary because it's the highest-value UGC. Report is secondary-but-equal (red outline not filled). Share is tertiary.</div></div>
+  <div class="spec-row"><div class="k">Mobile behavior</div><div class="v">All three buttons stay horizontal. Text compresses to <code>Review · Report · 📤</code></div></div>
+</div>
+
+<h4>3. Intel Sections</h4>
+<p>Sections appear only if the card has intel of that type. Order of appearance:</p>
+<ol>
+  <li><strong>Active Promos</strong> — Unexpired promo intel. Most valuable, placed first.</li>
+  <li><strong>Fee Changes</strong> — Chronological. Trend-highlighted.</li>
+  <li><strong>Reports — Last 24h</strong> — Bar chart + recent reports list.</li>
+  <li><strong>Tips</strong> — Community knowledge.</li>
+  <li><strong>Feature Updates</strong> — News.</li>
+  <li><strong>Reviews</strong> — Always last, most consumable content.</li>
+</ol>
+
+<h4>4. Intel Card Component</h4>
+<p>Each intel card shows:</p>
+<ul>
+  <li>Title (13px medium, text-primary)</li>
+  <li>Body content (12px, muted, 1.6 line-height)</li>
+  <li>Expiry date (if promo)</li>
+  <li>"Source →" link (if source_url provided)</li>
+  <li>Divider, then action row: <code>[✓ Confirm · N]  [✗ Deny · N]  posted_by · time_ago</code></li>
+</ul>
+
+<h4>5. Slash Timeline (24h bar chart)</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">X-axis</div><div class="v">24 bars, each representing 1 hour. Oldest on left, newest on right.</div></div>
+  <div class="spec-row"><div class="k">Y-axis</div><div class="v">Proportional height based on max-bar. Min height 10% for bars with count > 0.</div></div>
+  <div class="spec-row"><div class="k">Color</div><div class="v">&gt; 2 reports/hour = red · 1-2 = amber · 0 = neutral-gray (2px high)</div></div>
+  <div class="spec-row"><div class="k">Tooltip</div><div class="v">On hover: show "N" count in a dark pill above the bar.</div></div>
+  <div class="spec-row"><div class="k">Labels</div><div class="v">"24h ago" left, "Now" right. Total count in header.</div></div>
+</div>
+
+<h4>6. Reviews Section</h4>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Empty state</div><div class="v">Card-border box, centered: "No reviews yet" + CTA "Be the first to review →"</div></div>
+  <div class="spec-row"><div class="k">Review card</div><div class="v">Avatar (gradient circle, first letter) · display_name · "verified screenshot" badge (if attached) · time_ago (right)<br>Stars · Content (13px body, 1.65 line-height)</div></div>
+  <div class="spec-row"><div class="k">Screenshot badge</div><div class="v">Green micro-pill: "screenshot attached" — signals verifiability without requiring click-through.</div></div>
+  <div class="spec-row"><div class="k">Sort order</div><div class="v">Chronological, newest first.</div></div>
+</div>
+
+<!-- === SECTION 8: REVIEW FORM === -->
+<h2 class="section" id="s8" data-num="06 — PAGES">Review Form Spec</h2>
+<p class="section-desc">Low-friction review submission. Simplified from original 6-dimension spec.</p>
+
+<h3>Form fields</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Field</th><th>Required</th><th>Validation</th><th>UI</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Overall Rating</td>
+      <td>Yes</td>
+      <td>1-5 stars</td>
+      <td>5 large (28px) star buttons, hover-scale, glow on selected</td>
+    </tr>
+    <tr>
+      <td>Your Review</td>
+      <td>Yes</td>
+      <td>Min 10 chars</td>
+      <td>Textarea, 4 rows. Live char counter below.</td>
+    </tr>
+    <tr>
+      <td>Screenshot</td>
+      <td>No</td>
+      <td>Image files only</td>
+      <td>Dashed border upload zone. Filename shown after select.</td>
+    </tr>
+    <tr>
+      <td>Display Name</td>
+      <td>Yes</td>
+      <td>Non-empty string</td>
+      <td>Single-line input, placeholder "Your name or handle"</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Simplification rationale</h3>
+<div class="callout">
+  <div class="title">Why we dropped the 6-dimension rating</div>
+  <p>Original spec had 6 separate 1-5 ratings (top-up speed, fees, chains, freeze risk, support, KYC). For a cold-start product with zero reviews, asking users to fill out 6 sliders is a conversion killer. MVP uses 1 overall rating. Multi-dimension ratings return in V2 when we have volume.</p>
+</div>
+
+<h3>Validation & error handling</h3>
+<ul>
+  <li>Errors are shown inline in a red callout above the submit button</li>
+  <li>One error at a time (first-failure wins), not a list</li>
+  <li>Error copy is direct: "Please select a rating" — not "A valid rating is required"</li>
+  <li>No per-field inline errors (too noisy for a short form)</li>
+</ul>
+
+<h3>Success state</h3>
+<p>On submit: full-page success view → auto-redirect to card detail after 1.5s.</p>
+<div class="wireframe">
+<pre>
+              ┌─────┐
+              │  ✓  │  ← Green check icon in rounded box
+              └─────┘
+         Review submitted
+  Redirecting to Rain...
+</pre>
+</div>
+
+<!-- === SECTION 9: SLASH REPORT === -->
+<h2 class="section" id="s9" data-num="06 — PAGES">Slash Report + Share Flow</h2>
+<p class="section-desc">The viral growth engine. Report friction must be near-zero.</p>
+
+<h3>Form fields</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Field</th><th>Required</th><th>UI</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Issue Type</td>
+      <td>Yes</td>
+      <td>2×3 grid of tap cards. Icon + label + desc.</td>
+    </tr>
+    <tr>
+      <td>Details</td>
+      <td>No</td>
+      <td>Textarea, 3 rows. Optional by design.</td>
+    </tr>
+    <tr>
+      <td>Display Name</td>
+      <td>No (defaults Anonymous)</td>
+      <td>Input. Empty → "Anonymous".</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Issue types</h3>
+<div class="grid-3">
+  <div class="card"><strong>🧊 Frozen Funds</strong><br><span style="font-size:12px;color:var(--text-4);">Card or account frozen</span></div>
+  <div class="card"><strong>⏳ Withdrawal Delayed</strong><br><span style="font-size:12px;color:var(--text-4);">Funds stuck in transit</span></div>
+  <div class="card"><strong>💸 Fee Change</strong><br><span style="font-size:12px;color:var(--text-4);">Unexpected fee increase</span></div>
+  <div class="card"><strong>🚫 KYC Rejected</strong><br><span style="font-size:12px;color:var(--text-4);">KYC failed or re-requested</span></div>
+  <div class="card"><strong>📵 Support Down</strong><br><span style="font-size:12px;color:var(--text-4);">No reply from support</span></div>
+  <div class="card"><strong>⚠️ Other</strong><br><span style="font-size:12px;color:var(--text-4);">Something else</span></div>
+</div>
+
+<h3>Success state — The Share Flow (critical)</h3>
+<p>Unlike Review form, slash report does NOT auto-redirect. Instead, it shows a <strong>dedicated share view</strong> designed to maximize virality.</p>
+
+<div class="wireframe">
+  <div class="wf-label">Submitted view layout</div>
+<pre>
+  ┌─────────────────────────────────────────────────────┐
+  │                       ┌───┐                         │
+  │                       │ / │  (red icon box)         │
+  │                       └───┘                         │
+  │                Report submitted                     │
+  │      Help spread the word so others are warned      │
+  ├─────────────────────────────────────────────────────┤
+  │  ┌──────────────────────────────────────────────┐   │
+  │  │ <span class="hl-red">▌</span>  (red accent bar)                        │   │
+  │  │  🚨                                          │   │
+  │  │  RedotPay                                    │   │
+  │  │  <span class="hl-red">MAJOR ISSUES</span>                                │   │
+  │  │  ─────────────────────────                   │   │
+  │  │  Frozen Funds reported                       │   │
+  │  │  11 reports this week                        │   │
+  │  │  2.5 ★ from 3 reviews                        │   │
+  │  │  SlashCard — crypto-card-review.vercel.app   │   │
+  │  └──────────────────────────────────────────────┘   │
+  ├─────────────────────────────────────────────────────┤
+  │  [  ✕ Share to X                            ]       │  ← Primary CTA
+  │  [  📋 Copy Status Card Image               ]       │
+  │  [  Back to RedotPay                        ]       │
+  └─────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<h3>Share to X flow</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Trigger</div><div class="v">Click "Share to X" button</div></div>
+  <div class="spec-row"><div class="k">Action</div><div class="v">Open <code>https://x.com/intent/tweet</code> in popup window (550×420)</div></div>
+  <div class="spec-row"><div class="k">Pre-filled text</div><div class="v"><code>🚨 {CARD}: {ISSUE} reported</code><br><code>{N} reports this week on SlashCard</code><br><code>Check status & report issues →</code></div></div>
+  <div class="spec-row"><div class="k">Pre-filled URL</div><div class="v"><code>https://crypto-card-review.vercel.app/card/{slug}</code></div></div>
+  <div class="spec-row"><div class="k">No custom image in tweet</div><div class="v">X intent API doesn't support image attachment. Users can click "Copy Image" separately and paste.</div></div>
+</div>
+
+<h3>Copy Status Card flow</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Trigger</div><div class="v">Click "Copy Status Card Image"</div></div>
+  <div class="spec-row"><div class="k">Process</div><div class="v">Render PNG (600×340) via canvas. <code>navigator.clipboard.write()</code> with <code>ClipboardItem</code>.</div></div>
+  <div class="spec-row"><div class="k">Fallback</div><div class="v">If clipboard API fails (older Safari): auto-download as <code>slashcard-{slug}.png</code>.</div></div>
+  <div class="spec-row"><div class="k">Feedback</div><div class="v">Native alert: "Status card copied to clipboard!" <em>[TODO: replace with toast in V1.1]</em></div></div>
+</div>
+
+<h3>Status card image design</h3>
+<p>Generated PNG, 600×340, rounded corners. Layout:</p>
+<ul>
+  <li>Dark background <code>#08090a</code></li>
+  <li>3px red/yellow/green accent bar at top</li>
+  <li>Subtle radial glow (status-colored) in top-left</li>
+  <li>🚨 emoji (36px)</li>
+  <li>Card name (28px bold)</li>
+  <li>Status label (14px colored, uppercase)</li>
+  <li>Horizontal divider</li>
+  <li>Issue type line</li>
+  <li>Report count line</li>
+  <li>Rating line (if any)</li>
+  <li>Branding: "SlashCard — crypto-card-review.vercel.app"</li>
+</ul>
+
+<!-- === SECTION 10: INTEL FEED === -->
+<h2 class="section" id="s10" data-num="07 — FEATURES">Intelligence Feed Spec</h2>
+<p class="section-desc">The return-driver. Sticky sidebar on homepage, mixed content stream.</p>
+
+<h3>Content types</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Type</th><th>Icon</th><th>Color</th><th>Source</th><th>Avg freq</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Promo</strong></td><td>🎁</td><td><span class="badge green">GREEN</span></td><td>Ops</td><td>4-8/week</td></tr>
+    <tr><td><strong>Fee Change</strong></td><td>📊</td><td><span class="badge yellow">YELLOW</span></td><td>Ops</td><td>2-3/week</td></tr>
+    <tr><td><strong>Feature Update</strong></td><td>🆕</td><td><span class="badge blue">BLUE</span></td><td>Ops</td><td>1-2/week</td></tr>
+    <tr><td><strong>Tip</strong></td><td>💡</td><td><span class="badge purple">PURPLE</span></td><td>Ops</td><td>1-2/week</td></tr>
+    <tr><td><strong>Slash Report</strong></td><td>/</td><td><span class="badge red">RED</span></td><td>Users</td><td>Event-driven</td></tr>
+    <tr><td><strong>Review</strong></td><td>★</td><td><span class="badge purple">PURPLE</span></td><td>Users</td><td>Sporadic</td></tr>
+  </tbody>
+</table>
+
+<h3>Feed item anatomy</h3>
+<div class="wireframe">
+<pre>
+  ┌─┬──────────────────────────────────────────────────────┐
+  │▌│  [🎁]   Rain <span class="hl-green">PROMO</span>                         3h ago │    ← Meta: icon + card + type + time
+  │▌│         <strong>Weekend 5% cashback on dining</strong>            │    ← Title
+  │▌│         Expires Apr 14                               │    ← Expiry (if applicable)
+  │▌│         [✓ 3]  [✗ 0]                                 │    ← Vote buttons
+  └─┴──────────────────────────────────────────────────────┘
+   └─ Left border colored by type
+</pre>
+</div>
+
+<h3>Confirm / Deny mechanism</h3>
+<div class="callout">
+  <div class="title">The single most important UX decision in V1</div>
+  <p>Confirm/Deny is the <strong>only user-contributed data</strong> for intel items in V1. Because it's a single click, it converts passive readers into participants at a ratio of roughly 100:1 vs. any UGC submission.</p>
+</div>
+
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Button style</div><div class="v"><code>[✓ N]</code> green outline · <code>[✗ N]</code> red outline. Compact (8×24px padding). Tabular-nums.</div></div>
+  <div class="spec-row"><div class="k">One-time vote</div><div class="v">After voting, both buttons disabled. Selected button filled, other faded (opacity 0.4).</div></div>
+  <div class="spec-row"><div class="k">Persistence</div><div class="v">V1: In-memory only (resets on reload). V2: localStorage + server-side dedup.</div></div>
+  <div class="spec-row"><div class="k">Moderation</div><div class="v">If denies &gt; confirms + 3, flag for ops review. Item auto-hidden if denies &gt; 10. <em>[V1.1]</em></div></div>
+</div>
+
+<h3>Feed filtering</h3>
+<p>Tab control at top of feed: <strong>All · Intel · Reports</strong></p>
+<ul>
+  <li><strong>All</strong>: intel + slash + reviews, chronological</li>
+  <li><strong>Intel</strong>: ops-posted intel only (promo/fee/feature/tip)</li>
+  <li><strong>Reports</strong>: slash reports only</li>
+</ul>
+
+<h3>Feed ordering</h3>
+<p>V1: Strict chronological (newest first).</p>
+<p>V2 consideration: Weighted by confirms - denies (quality signal). Pin high-priority items (new promos, red-status card alerts) for 24h.</p>
+
+<!-- === SECTION 11: CONTENT SUPPLY === -->
+<h2 class="section" id="s11" data-num="07 — FEATURES">Content Supply Model</h2>
+<p class="section-desc">Who creates what. The critical distinction between V1 and competitors.</p>
+
+<h3>The supply split</h3>
+<div class="grid-2">
+  <div class="card">
+    <span class="badge blue">OPS / ADMIN</span>
+    <h4 style="margin-top:12px;">Team-curated content</h4>
+    <ul>
+      <li>🎁 Promo intel</li>
+      <li>📊 Fee changes</li>
+      <li>🆕 Feature updates</li>
+      <li>💡 Tips</li>
+    </ul>
+    <p style="font-size:12px;color:var(--text-3);margin:12px 0 0;"><strong>Source:</strong> Monitor TG groups, X accounts, official announcements. Seeded manually via Supabase dashboard in V1 (no admin UI needed).</p>
+  </div>
+  <div class="card">
+    <span class="badge purple">USERS</span>
+    <h4 style="margin-top:12px;">User-contributed content</h4>
+    <ul>
+      <li>⭐️ Reviews (full submission)</li>
+      <li>/ Slash reports (full submission)</li>
+      <li>✓/✗ Confirm/Deny (one-click)</li>
+    </ul>
+    <p style="font-size:12px;color:var(--text-3);margin:12px 0 0;"><strong>Motivation:</strong> Reviews = reputation-free catharsis. Reports = anger. Confirms = near-zero cost participation.</p>
+  </div>
+</div>
+
+<h3>Why we don't accept user-submitted intel in V1</h3>
+<div class="callout yellow">
+  <div class="title">Cold-start reality check</div>
+  <p>We analyzed the motivation for each content type. Positive intel (promos, tips) requires either reputation, karma, or community belonging to incentivize creation. V1 has none of these. Asking anonymous users to submit intel = empty intel feed.</p>
+  <p>Instead: Team owns supply in V1. Users own validation (confirm/deny). When user volume justifies it (~1000 DAU), unlock user-submitted intel with optional moderation.</p>
+</div>
+
+<h3>Ops playbook (for internal team)</h3>
+<ol>
+  <li><strong>Daily:</strong> Scan X + TG groups for card news. Post as intel items with source link.</li>
+  <li><strong>Weekly:</strong> Publish at least 1 tip. Aim for 4-8 promo items if deals exist.</li>
+  <li><strong>Monthly:</strong> Audit fee change list across cards. Compare to official rate cards.</li>
+  <li><strong>Event-driven:</strong> When a card has incident spike, write a summary intel item contextualizing the activity.</li>
+</ol>
+
+<!-- === SECTION 12: STATUS INDICATOR === -->
+<h2 class="section" id="s12" data-num="07 — FEATURES">Status Indicator Logic</h2>
+<p class="section-desc">How we decide green / yellow / red.</p>
+
+<h3>The rule</h3>
+<div class="wireframe">
+<pre>
+  <span class="hl-green">GREEN  (Normal)</span>      recent_slash_count ≤ 5
+  <span class="hl-yellow">YELLOW (Issues)</span>      5 &lt; recent_slash_count ≤ 15
+  <span class="hl-red">RED    (Critical)</span>    recent_slash_count &gt; 15
+
+  recent_slash_count = slash_reports WHERE created_at &gt; now() - 7 days
+</pre>
+</div>
+
+<h3>Why a sliding 7-day window</h3>
+<p>Fixed thresholds over "all time" would cause status to become permanent. Sliding window means status self-heals as old reports age out. If a card had a spike 2 months ago but is fine now, it returns to green.</p>
+
+<h3>Why absolute thresholds (not ratios)</h3>
+<p>Ratio-based thresholds (e.g., "reports / users") require knowing user base per card — we don't. Absolute thresholds are simple and calibrated against expected volume. Once we have traffic data, tune thresholds per card popularity.</p>
+
+<h3>Visual treatment</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name" style="color:var(--green);">GREEN</div>
+    <div class="state-desc">Badge "Normal". Pulsing dot. No glow on cards. Calm, unobtrusive.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name" style="color:var(--yellow);">YELLOW</div>
+    <div class="state-desc">Badge "Issues (N)". Pulsing amber dot. Subtle yellow glow on detail page. Pulsing alert banner on homepage.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name" style="color:var(--red);">RED</div>
+    <div class="state-desc">Badge "Critical (N)". Pulsing red dot. Strong red glow on detail page. Priority alert banner. Top of Trending sort.</div>
+  </div>
+</div>
+
+<h3>Anti-gaming considerations</h3>
+<div class="callout red">
+  <div class="title">Risk: Spam / competitor attacks</div>
+  <p>In V1, submission is open and anonymous. A competitor could submit 20 slash reports to turn a rival red.</p>
+  <p><strong>Mitigation (V1.1):</strong> Rate limit by IP + browser fingerprint (1 report per card per 24h). Require confirm/deny votes to count toward status calc (low-confirm reports get weighted less).</p>
+</div>
+
+<!-- === SECTION 13: DESIGN SYSTEM === -->
+<h2 class="section" id="s13" data-num="08 — DESIGN">Design System</h2>
+<p class="section-desc">Tokens, palette, typography. Based on a Linear × Vercel × Stripe fusion.</p>
+
+<h3>Color tokens</h3>
+
+<h4>Surfaces (dark theme native)</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#08090a;"></div><div class="swatch-name">Canvas</div><div class="swatch-hex">#08090A</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#0f1011;"></div><div class="swatch-name">Surface</div><div class="swatch-hex">#0F1011</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#191a1b;"></div><div class="swatch-name">Surface 2</div><div class="swatch-hex">#191A1B</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#28282c;"></div><div class="swatch-name">Surface 3</div><div class="swatch-hex">#28282C</div></div>
+</div>
+
+<h4>Text hierarchy</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#f7f8f8;"></div><div class="swatch-name">Text primary</div><div class="swatch-hex">#F7F8F8</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#d0d6e0;"></div><div class="swatch-name">Text 2</div><div class="swatch-hex">#D0D6E0</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#8a8f98;"></div><div class="swatch-name">Text 3</div><div class="swatch-hex">#8A8F98</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#62666d;"></div><div class="swatch-name">Text 4</div><div class="swatch-hex">#62666D</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#4a4d54;"></div><div class="swatch-name">Text 5</div><div class="swatch-hex">#4A4D54</div></div>
+</div>
+
+<h4>Brand & semantic</h4>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-color" style="background:#7170ff;"></div><div class="swatch-name">Brand</div><div class="swatch-hex">#7170FF</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#5e6ad2;"></div><div class="swatch-name">Brand-2</div><div class="swatch-hex">#5E6AD2</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#27a644;"></div><div class="swatch-name">Green (success)</div><div class="swatch-hex">#27A644</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#f59e0b;"></div><div class="swatch-name">Yellow (warn)</div><div class="swatch-hex">#F59E0B</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#ef4444;"></div><div class="swatch-name">Red (critical)</div><div class="swatch-hex">#EF4444</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#0a72ef;"></div><div class="swatch-name">Blue (info)</div><div class="swatch-hex">#0A72EF</div></div>
+</div>
+
+<h3>Typography</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Role</th><th>Size</th><th>Weight</th><th>Letter-spacing</th><th>Use</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Display hero</td><td>44-56px</td><td>300</td><td>-0.04em</td><td>Homepage H1</td></tr>
+    <tr><td>Page title</td><td>22px</td><td>500</td><td>-0.02em</td><td>Card detail H1</td></tr>
+    <tr><td>Section heading</td><td>13px</td><td>500</td><td>normal</td><td>"Reviews", "Active Promos"</td></tr>
+    <tr><td>Card title</td><td>15px</td><td>600</td><td>-0.01em</td><td>Card name in grid</td></tr>
+    <tr><td>Body</td><td>13px</td><td>400</td><td>normal</td><td>Review content, intel body</td></tr>
+    <tr><td>Small</td><td>12px</td><td>400-500</td><td>normal</td><td>Metadata, timestamps</td></tr>
+    <tr><td>Micro</td><td>11px</td><td>500-600</td><td>normal</td><td>Pills, badges</td></tr>
+    <tr><td>Nano</td><td>10px</td><td>600</td><td>0.05em</td><td>Uppercase labels</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Font:</strong> Inter Variable with <code>font-feature-settings: "cv01", "ss01"</code> globally (Linear-style geometric alternates).</p>
+
+<h3>Shadow system (border-as-shadow)</h3>
+<div class="callout">
+  <div class="title">Vercel technique adopted: borders are drawn with shadows, not CSS borders</div>
+  <p>This enables smoother rounded corners, avoids double-border at intersections, and allows borders to exist in the shadow layer for better blending.</p>
+</div>
+
+<div class="wireframe">
+<pre>
+  Standard card        box-shadow: rgba(255,255,255,0.06) 0 0 0 1px,
+                                   rgba(50,50,93,0.08) 0 2px 4px,
+                                   rgba(0,0,0,0.12) 0 4px 12px -4px;
+
+  Hover state          box-shadow: rgba(255,255,255,0.10) 0 0 0 1px,
+                                   rgba(50,50,93,0.12) 0 4px 8px,
+                                   rgba(0,0,0,0.16) 0 8px 24px -8px;
+
+  Red-status card      box-shadow: rgba(239,68,68,0.25) 0 0 0 1px,
+                                   rgba(239,68,68,0.08) 0 2px 4px,
+                                   rgba(239,68,68,0.06) 0 8px 24px -4px;
+
+  Elevated modal       box-shadow: rgba(50,50,93,0.25) 0 13px 27px -5px,
+                                   rgba(0,0,0,0.3) 0 8px 16px -8px;
+</pre>
+</div>
+
+<h3>Spacing scale</h3>
+<p>8px base unit. Scale: 2, 4, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96px.</p>
+
+<h3>Radius scale</h3>
+<ul>
+  <li><code>4px</code> — micro pills, small chips</li>
+  <li><code>6px</code> — tab buttons</li>
+  <li><code>8px</code> — input fields, small buttons</li>
+  <li><code>10px</code> — standard buttons, small cards</li>
+  <li><code>12px</code> — cards, modals</li>
+  <li><code>14px</code> — credit card visual</li>
+  <li><code>16px</code> — large cards, modal containers</li>
+  <li><code>9999px</code> — pills, status badges</li>
+</ul>
+
+<!-- === SECTION 14: COMPONENTS === -->
+<h2 class="section" id="s14" data-num="08 — DESIGN">Component Library</h2>
+<p class="section-desc">Every reusable UI component, with states.</p>
+
+<h3>Button (primary)</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Size</div><div class="v">Padding: 10px vertical, full-width or content. Font: 13-14px medium.</div></div>
+  <div class="spec-row"><div class="k">Background</div><div class="v">Linear gradient 135deg, #5e6ad2 → #7170ff</div></div>
+  <div class="spec-row"><div class="k">Shadow</div><div class="v">rgba(113,112,255,0.25) 0 4px 12px (brand glow)</div></div>
+  <div class="spec-row"><div class="k">Text</div><div class="v">#fff, medium 14px</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">opacity 0.9</div></div>
+  <div class="spec-row"><div class="k">Disabled</div><div class="v">opacity 0.5, cursor not-allowed</div></div>
+  <div class="spec-row"><div class="k">Use</div><div class="v">Primary CTAs: "Submit Review", "Write a Review", "Share to X" (variant: black background)</div></div>
+</div>
+
+<h3>Button (destructive outline)</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Background</div><div class="v">transparent</div></div>
+  <div class="spec-row"><div class="k">Shadow</div><div class="v">rgba(239,68,68,0.2) 0 0 0 1px (red outline)</div></div>
+  <div class="spec-row"><div class="k">Text</div><div class="v">#ef4444, medium</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">bg rgba(239,68,68,0.08)</div></div>
+  <div class="spec-row"><div class="k">Use</div><div class="v">"/ Slash Report", "Submit Slash Report" (filled red variant on form)</div></div>
+</div>
+
+<h3>Button (neutral secondary)</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Background</div><div class="v">transparent</div></div>
+  <div class="spec-row"><div class="k">Shadow</div><div class="v">rgba(255,255,255,0.06) 0 0 0 1px</div></div>
+  <div class="spec-row"><div class="k">Text</div><div class="v">#8a8f98</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">bg rgba(255,255,255,0.04), text #d0d6e0</div></div>
+  <div class="spec-row"><div class="k">Use</div><div class="v">"Back to X", "Close", "📤 Share" icon button</div></div>
+</div>
+
+<h3>Input field</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Background</div><div class="v">rgba(255,255,255,0.02)</div></div>
+  <div class="spec-row"><div class="k">Shadow (default)</div><div class="v">rgba(255,255,255,0.06) 0 0 0 1px</div></div>
+  <div class="spec-row"><div class="k">Shadow (focus)</div><div class="v">rgba(113,112,255,0.3) 0 0 0 1px, rgba(113,112,255,0.1) 0 0 0 4px (ring)</div></div>
+  <div class="spec-row"><div class="k">Focus on form type</div><div class="v">Review form = indigo. Slash form = red.</div></div>
+  <div class="spec-row"><div class="k">Placeholder</div><div class="v">#4a4d54</div></div>
+  <div class="spec-row"><div class="k">Text</div><div class="v">#d0d6e0, 13px</div></div>
+  <div class="spec-row"><div class="k">Radius</div><div class="v">12px (lg) for textarea, 12px for input</div></div>
+</div>
+
+<h3>Pill / Badge</h3>
+<ul>
+  <li><strong>Neutral pill</strong>: #8a8f98 text, 1px white-border shadow, 4px radius, used for tags</li>
+  <li><strong>Colored pill</strong>: semantic bg + shadow (green/yellow/red/blue/purple), 4px radius, uppercase</li>
+  <li><strong>Status badge</strong>: pill-shape (9999px radius), with pulsing dot + label</li>
+  <li><strong>Micro badge</strong>: 10px text, 2px vertical padding, for inline emphasis like "PROMO"</li>
+</ul>
+
+<h3>Credit Card Visual</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Aspect ratio</div><div class="v">1.586 (standard credit card)</div></div>
+  <div class="spec-row"><div class="k">Sizes</div><div class="v"><code>sm</code> 100% width · <code>md</code> max 320px · <code>lg</code> max 400px</div></div>
+  <div class="spec-row"><div class="k">Gradient</div><div class="v">Unique 3-stop gradient per card name. Dark metallic palette.</div></div>
+  <div class="spec-row"><div class="k">Elements</div><div class="v">Golden chip (top-left) + contactless icon (top-right) + name (bottom-left, uppercase 0.1em tracking) + card_type + Visa/Mastercard SVG (bottom-right)</div></div>
+  <div class="spec-row"><div class="k">Effects</div><div class="v">Noise overlay (2.5% opacity SVG fractal) + radial gradient orb + inner highlight border + status glow</div></div>
+  <div class="spec-row"><div class="k">Hover</div><div class="v">3D tilt: rotateY -3deg, rotateX 2deg, perspective 800px, cubic-bezier(0.23, 1, 0.32, 1) 0.4s</div></div>
+  <div class="spec-row"><div class="k">Promo state</div><div class="v">Animated green shimmer overlay: 3s linear diagonal sweep</div></div>
+</div>
+
+<h3>Star Rating</h3>
+<ul>
+  <li><strong>Display mode</strong>: 5 stars, sm/md/lg sizes. Filled = gold #f59e0b. Empty = rgba(255,255,255,0.08).</li>
+  <li><strong>Input mode</strong>: 28px stars, 8px gap, hover:scale-110. Selected stars get gold drop-shadow glow.</li>
+  <li><strong>No half-stars</strong> in V1 (Math.round applied to averages).</li>
+</ul>
+
+<h3>Status Badge</h3>
+<div class="spec-block">
+  <div class="spec-row"><div class="k">Structure</div><div class="v">Pulsing dot + label + optional count</div></div>
+  <div class="spec-row"><div class="k">Green</div><div class="v">"Normal" (no pulse)</div></div>
+  <div class="spec-row"><div class="k">Yellow</div><div class="v">"Issues N" (pulsing)</div></div>
+  <div class="spec-row"><div class="k">Red</div><div class="v">"Critical N" (pulsing)</div></div>
+</div>
+
+<!-- === SECTION 15: INTERACTION PATTERNS === -->
+<h2 class="section" id="s15" data-num="09 — INTERACTION">Interaction Patterns</h2>
+<p class="section-desc">Consistent behaviors across all pages.</p>
+
+<h3>Form submission pattern</h3>
+<div class="flow">
+  <div class="flow-step">User fills form</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Client-side validation</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Error shown inline if invalid</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">On success: state update + transition view</div>
+</div>
+
+<h3>Review form success → auto-redirect (1.5s)</h3>
+<h3>Slash form success → share flow (user-driven next action)</h3>
+
+<h3>Hover feedback matrix</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Element</th><th>Hover behavior</th><th>Duration</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Card grid item</td><td>Lift 4px + 3D tilt CC visual</td><td>400ms ease-out</td></tr>
+    <tr><td>Primary button</td><td>Opacity 0.9</td><td>Instant (hover)</td></tr>
+    <tr><td>Neutral button</td><td>Background fill</td><td>Instant</td></tr>
+    <tr><td>Feed item</td><td>Background white/0.015</td><td>200ms</td></tr>
+    <tr><td>Link text</td><td>Color shift</td><td>Instant</td></tr>
+    <tr><td>Star input</td><td>Scale 1.1</td><td>Instant</td></tr>
+  </tbody>
+</table>
+
+<h3>Loading / empty / error states</h3>
+<div class="state-grid">
+  <div class="state-item">
+    <div class="state-name">Loading (V1)</div>
+    <div class="state-desc">Mock data, no loader needed. V1.1 (Supabase): skeleton shimmer for grid, 200ms fade-in.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Empty — no reviews</div>
+    <div class="state-desc">"No reviews yet" + CTA "Be the first to review →"</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Empty — no intel</div>
+    <div class="state-desc">Section hidden entirely (don't render empty headers).</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Error — form validation</div>
+    <div class="state-desc">Red callout above submit button, with specific error copy.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">Error — network (V1.1)</div>
+    <div class="state-desc">Toast: "Couldn't submit. Try again?" with retry action.</div>
+  </div>
+  <div class="state-item">
+    <div class="state-name">404 — unknown card</div>
+    <div class="state-desc">Centered "Card not found" text. V1.1: suggest similar card names.</div>
+  </div>
+</div>
+
+<h3>Animations</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Animation</th><th>Use</th><th>Duration</th><th>Easing</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pulse</td><td>Status dots, alert banner dot</td><td>2s infinite</td><td>ease-in-out</td></tr>
+    <tr><td>3D tilt</td><td>Card visual on hover</td><td>400ms</td><td>cubic-bezier(0.23, 1, 0.32, 1)</td></tr>
+    <tr><td>Shimmer</td><td>Promo overlay on CC visual</td><td>3s infinite</td><td>ease-in-out</td></tr>
+    <tr><td>Lift</td><td>Card grid item hover</td><td>300ms</td><td>ease</td></tr>
+    <tr><td>Opacity fade</td><td>State transitions</td><td>200ms</td><td>ease</td></tr>
+  </tbody>
+</table>
+
+<!-- === SECTION 16: RESPONSIVE === -->
+<h2 class="section" id="s16" data-num="09 — INTERACTION">Responsive Behavior</h2>
+<p class="section-desc">Mobile-first. Breakpoints and adaptations.</p>
+
+<h3>Breakpoints</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Name</th><th>Width</th><th>Target device</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Mobile</td><td>&lt; 640px</td><td>Phones (portrait)</td></tr>
+    <tr><td>Tablet</td><td>640 - 1024px</td><td>Tablets, phones (landscape), small laptops</td></tr>
+    <tr><td>Desktop</td><td>≥ 1024px</td><td>Standard laptop, monitor</td></tr>
+    <tr><td>Large</td><td>≥ 1200px</td><td>Content max-width reached</td></tr>
+  </tbody>
+</table>
+
+<h3>Page-specific adaptations</h3>
+
+<h4>Homepage</h4>
+<ul>
+  <li><strong>Mobile:</strong> Hero 32px. Sidebar stacks below grid. Grid is 1 column. Category pills horizontal-scroll.</li>
+  <li><strong>Tablet:</strong> Hero 44px. Grid is 2 columns. Sidebar stacks below.</li>
+  <li><strong>Desktop:</strong> Hero 56px. Grid is 3 columns. Sidebar shows beside grid (300px).</li>
+</ul>
+
+<h4>Card detail</h4>
+<ul>
+  <li><strong>Mobile:</strong> CC visual 100% width (up to 400px max). Tags wrap. Padding reduces to 16px.</li>
+  <li><strong>Action buttons:</strong> Always horizontal, flex-1 distributes width.</li>
+</ul>
+
+<h4>Forms</h4>
+<ul>
+  <li><strong>Mobile:</strong> Full width (520px max). Issue type grid stays 2 columns (smaller text).</li>
+</ul>
+
+<h3>Touch targets</h3>
+<p>All interactive elements have ≥ 40px touch target on mobile. Buttons default to 40-44px height.</p>
+
+<!-- === SECTION 17: COPY & VOICE === -->
+<h2 class="section" id="s17" data-num="10 — CONTENT">Copy & Voice</h2>
+<p class="section-desc">Tone guidelines and microcopy conventions.</p>
+
+<h3>Voice principles</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>✓ DO</h4>
+    <ul style="font-size:13px;">
+      <li>Direct. "Please select a rating" not "A valid rating must be selected"</li>
+      <li>Neutral on cards. Don't root for or against any card.</li>
+      <li>Factual on problems. "3 reports this week" not "disaster unfolding"</li>
+      <li>Lowercase except proper nouns.</li>
+      <li>Use em-dashes (—) for pause, not colons.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>✕ DON'T</h4>
+    <ul style="font-size:13px;">
+      <li>Preach. (Dropped "No shills. No sponsors.")</li>
+      <li>Marketing fluff. No "revolutionary" "game-changing".</li>
+      <li>Emojis in body copy. Only in specific UI slots (intel type icons).</li>
+      <li>Apologize. "Report submitted" not "Sorry for the trouble!"</li>
+      <li>Exclamation marks. Ever.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Microcopy conventions</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Context</th><th>Our copy</th><th>Why not</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Empty reviews</td><td>"No reviews yet"</td><td>Not "Be the first!" — avoid cheerleading</td></tr>
+    <tr><td>Share button</td><td>"Share to X"</td><td>Not "Tweet" — X rebranding</td></tr>
+    <tr><td>Slash form title</td><td>"/ Slash Report"</td><td>The slash character IS the brand element</td></tr>
+    <tr><td>Status</td><td>"Normal / Issues / Critical"</td><td>Not "OK / Warning / Down" — more semantic</td></tr>
+    <tr><td>Report success</td><td>"Help spread the word so others are warned"</td><td>Frame sharing as altruism, not self-promotion</td></tr>
+    <tr><td>Rating prompt</td><td>"Top-up speed? Freeze issues? Support quality?"</td><td>Guide the writer, don't dictate structure</td></tr>
+  </tbody>
+</table>
+
+<!-- === SECTION 18: ACCESSIBILITY === -->
+<h2 class="section" id="s18" data-num="10 — CONTENT">Accessibility</h2>
+<p class="section-desc">A11y standards met and gaps to close.</p>
+
+<h3>Met in V1</h3>
+<ul>
+  <li>Semantic HTML (proper heading hierarchy, nav, main, footer)</li>
+  <li>Color contrast ≥ AA for body text on all surfaces</li>
+  <li>Focus ring on all inputs (4px brand-colored outer glow)</li>
+  <li>Viewport meta tag (responsive scaling)</li>
+  <li>Alt text on images (card logos)</li>
+  <li>Form labels properly associated</li>
+</ul>
+
+<h3>Gaps / TODO (V1.1)</h3>
+<ul>
+  <li>Keyboard navigation: tab order verified, but skip-links missing</li>
+  <li>Screen reader: pulsing dots lack aria-label (e.g., "live status indicator")</li>
+  <li>Color as information: status indicators rely on color + label (OK), but timeline chart uses color only → add sr-only text</li>
+  <li>Motion preferences: <code>prefers-reduced-motion</code> not yet respected → disable 3D tilt + pulse</li>
+  <li>Star input: arrow key navigation missing</li>
+</ul>
+
+<!-- === SECTION 19: GROWTH LOOP === -->
+<h2 class="section" id="s19" data-num="11 — GROWTH">Growth Loop</h2>
+<p class="section-desc">How SlashCard grows itself, no paid acquisition.</p>
+
+<h3>The virality mechanic</h3>
+<div class="wireframe">
+<pre>
+          ┌─────────────────────────────┐
+          │  User has bad card incident │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ Searches "X card frozen" on │
+          │ X → finds SlashCard link    │
+          │ OR lands via SEO            │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ Reads slash reports, sees   │
+          │ they're not alone           │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ Files their own slash report│
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ Sees share success screen   │
+          │ → clicks "Share to X"       │
+          └────────────┬────────────────┘
+                       ▼
+          ┌─────────────────────────────┐
+          │ Tweet with SlashCard link   │
+          │ reaches their followers     │
+          └────────────┬────────────────┘
+                       │
+                       ◄──── (loop closes)
+</pre>
+</div>
+
+<h3>Viral coefficient estimation</h3>
+<p>Every slash submission → ~25% click "Share to X" (based on analogous fintech incident apps) → average tweet reach ~300 followers → ~2% CTR from tweet to SlashCard → ~0.15 new visits per submission.</p>
+
+<p>At that rate, we need an amplification mechanism beyond just slash reports. Planned additions:</p>
+<ul>
+  <li><strong>Auto-tweet from ops</strong>: When a card hits RED status, ops manually tweets the status card image (no UI change needed, just a playbook)</li>
+  <li><strong>Weekly digest</strong>: Email subscribers get "This week in crypto cards" — high-signal, low-effort retention</li>
+  <li><strong>Embeddable status widget</strong>: Card issuers / bloggers can embed "current status of X card" badge → backlinks (V2)</li>
+</ul>
+
+<!-- === SECTION 20: EMPTY & EDGE === -->
+<h2 class="section" id="s20" data-num="12 — EDGE CASES">Empty & Edge States</h2>
+<p class="section-desc">What happens when something is missing, wrong, or broken.</p>
+
+<table class="bordered">
+  <thead>
+    <tr><th>Scenario</th><th>Current handling</th><th>V1.1 improvement</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Card has zero reviews</td><td>"No reviews yet" + CTA</td><td>—</td></tr>
+    <tr><td>Card has zero slash reports</td><td>Sections hidden</td><td>—</td></tr>
+    <tr><td>Filter returns zero cards</td><td>Empty grid (no message)</td><td>Add "No cards match" + reset button</td></tr>
+    <tr><td>Feed has zero items</td><td>Empty scrollable area</td><td>"No activity yet" placeholder</td></tr>
+    <tr><td>Invalid card slug</td><td>"Card not found" centered</td><td>Link back to home + suggest card</td></tr>
+    <tr><td>Long card name overflows</td><td>Wraps to next line</td><td>Truncate with ellipsis at 20 chars</td></tr>
+    <tr><td>Long review text</td><td>Shows full text</td><td>Collapse &gt; 500 chars with "Read more"</td></tr>
+    <tr><td>Card logo image fails to load</td><td>Fallback to gradient initial</td><td>—</td></tr>
+    <tr><td>Network fails on submit</td><td>Silent failure (mock data)</td><td>Error toast + retry button</td></tr>
+    <tr><td>User double-submits</td><td>Duplicate record created</td><td>Debounce + disable button during submit</td></tr>
+    <tr><td>Clipboard API unavailable</td><td>Falls back to PNG download</td><td>—</td></tr>
+    <tr><td>Share popup blocked</td><td>Silent failure</td><td>Detect + show fallback link to copy</td></tr>
+  </tbody>
+</table>
+
+<!-- === SECTION 21: OPEN QUESTIONS === -->
+<h2 class="section" id="s21" data-num="13 — ROADMAP">Open Questions & V2 Roadmap</h2>
+<p class="section-desc">Things to discuss and build next.</p>
+
+<h3>Open design questions</h3>
+<ol>
+  <li><strong>Sort "Trending" semantics</strong>: Should it surface cards with most reports (current) or most recent activity regardless of sign? I.e., a card with lots of new promos should also "trend."</li>
+  <li><strong>Alert banner selection</strong>: Currently shows first red/yellow. Should it be the newest incident? The highest count? User-configurable?</li>
+  <li><strong>Review form weight</strong>: Is 10-char min the right bar? Too high kills conversion. Too low invites spam. Monitor spam rate in V1.1.</li>
+  <li><strong>Intel ordering in feed</strong>: Pure chronological vs. weighted by confirms? Pinning mechanism needed?</li>
+  <li><strong>CTA priority on detail page</strong>: Review vs. Slash — currently Review is primary (indigo). Is that right for a card with active issues? Context-switch to Slash as primary when status is red?</li>
+</ol>
+
+<h3>V1.1 (weeks 1-2 post-launch)</h3>
+<ul>
+  <li>Supabase backend (replace mock data)</li>
+  <li>Rate limiting on submissions (1 per IP per card per 24h)</li>
+  <li>Replace native <code>alert()</code> with toast component</li>
+  <li>Add empty states for filtered grid</li>
+  <li>Add <code>prefers-reduced-motion</code> support</li>
+  <li>Card logo auto-fetch on card add (Clearbit Logo API)</li>
+</ul>
+
+<h3>V2 (1-3 months)</h3>
+<ul>
+  <li>Email/TG bot "Watch a card" — push notifications for fee changes, status changes, new promos</li>
+  <li>Admin dashboard for ops intel posting (replace Supabase dashboard)</li>
+  <li>Review search and filter</li>
+  <li>Card comparison view ("Rain vs RedotPay")</li>
+  <li>Multi-dimension rating (return of the 6-dimension rating from original spec)</li>
+  <li>Upvote/downvote reviews for quality signal</li>
+  <li>Chinese localization (simplified Chinese primary)</li>
+</ul>
+
+<h3>V3 speculation</h3>
+<ul>
+  <li>Wallet signature verification (optional, adds "verified holder" badge)</li>
+  <li>Historical status timeline (when did X card go red/yellow in past 6 months)</li>
+  <li>Fee history graphs (visualize fee evolution)</li>
+  <li>Embeddable status widget</li>
+  <li>Mobile app</li>
+  <li>User-submitted intel (with moderation)</li>
+  <li>Card issuer pages with moderated response mechanism ("verified response from RedotPay team")</li>
+</ul>
+
+<!-- === SECTION 22: TECH STACK === -->
+<h2 class="section" id="s22" data-num="14 — TECHNICAL">Technical Stack</h2>
+<p class="section-desc">For reference only. Not a front-of-mind concern for design discussion.</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>Frontend</h4>
+    <ul style="font-size:13px;">
+      <li>React 19 + Vite 8</li>
+      <li>Tailwind CSS 4 (via <code>@tailwindcss/vite</code>)</li>
+      <li>React Router v7</li>
+      <li>No state management library (React Context for MVP)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Backend (V1.1)</h4>
+    <ul style="font-size:13px;">
+      <li>Supabase (Postgres + REST + RLS)</li>
+      <li>No auth in V1 (anonymous inserts via RLS policies)</li>
+      <li>Supabase Storage for review screenshots</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Deployment</h4>
+    <ul style="font-size:13px;">
+      <li>Vercel (auto-deploy from <code>main</code>)</li>
+      <li>Custom domain TBD (currently <code>crypto-card-review.vercel.app</code>)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Repo</h4>
+    <ul style="font-size:13px;">
+      <li><a href="https://github.com/realdora/slashcard">github.com/realdora/slashcard</a></li>
+      <li>MIT license (public)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- === APPENDIX === -->
+<h2 class="section" id="appendix" data-num="A — APPENDIX">Appendix</h2>
+
+<h3>Design decisions log</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Decision</th><th>Reasoning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Dark theme native (not light with dark toggle)</td><td>Crypto audience skews dark. Cleaner brand identity. One fewer mode to maintain.</td></tr>
+    <tr><td>Rendered CC visuals (not logos)</td><td>todey.xyz uses card product shots (expensive to license). Our CSS-rendered cards avoid legal risk and look distinctive.</td></tr>
+    <tr><td>Anonymous submission (no auth)</td><td>Lower friction &gt; higher quality. Quality problems solved by confirm/deny mechanism instead of auth.</td></tr>
+    <tr><td>Ops-only intel creation</td><td>Cold-start won't generate user intel. Team acts as editorial.</td></tr>
+    <tr><td>Single rating (not 6-dimension)</td><td>Conversion over taxonomy. Multi-dimension returns in V2 with volume.</td></tr>
+    <tr><td>No auto-redirect after slash</td><td>Slash submission IS the growth event. Dedicated share view captures that value.</td></tr>
+    <tr><td>No user intel submission</td><td>Weak motivation without reputation. V2 feature.</td></tr>
+    <tr><td>Slash name kept (not "Report")</td><td>"Slash" is distinctive, product-defining, and the / icon IS the brand.</td></tr>
+  </tbody>
+</table>
+
+<h3>Risks & mitigations</h3>
+<table class="bordered">
+  <thead>
+    <tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Competitor floods a rival card with fake slash reports</td><td>Medium</td><td>Rate limiting + confirm/deny weighting (V1.1)</td></tr>
+    <tr><td>Card issuer sends legal threat re: negative reports</td><td>Low</td><td>Clear disclaimer "Independent, no affiliation" in footer. User-generated content = Section 230 style protection.</td></tr>
+    <tr><td>Intel accuracy — promo expires silently</td><td>Medium</td><td>Expiry date field auto-hides expired promos. Ops reviews weekly.</td></tr>
+    <tr><td>No user traction</td><td>High</td><td>Founder-led X posting. SEO targeting "X card review" terms. Cross-posting to relevant subreddits.</td></tr>
+    <tr><td>Status thresholds too sensitive (false alarms)</td><td>Medium</td><td>Tunable after data collection. Start conservative (15 = red).</td></tr>
+  </tbody>
+</table>
+
+<div class="footnote">
+  <p>SlashCard Product Specification · v1.0 · Apr 16, 2026 · Prepared for design + product team review. All interaction patterns and visual decisions are implemented in the live MVP at <a href="https://crypto-card-review.vercel.app">crypto-card-review.vercel.app</a>.</p>
+</div>
+
+</div>
+</body>
+</html>
